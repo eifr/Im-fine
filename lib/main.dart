@@ -1,6 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:im_safe/location/change_notification.dart';
+import 'package:im_safe/location/change_settings.dart';
+import 'package:im_safe/location/enable_in_background.dart';
+import 'package:im_safe/location/get_location.dart';
+import 'package:im_safe/location/listen_location.dart';
 import 'package:im_safe/notification-page.dart';
+import 'package:im_safe/location/permission_status.dart';
+import 'package:im_safe/location/service_enabled.dart';
+import 'package:location/location.dart';
+
+Future<void> createNotification(int time) async {
+  await AwesomeNotifications().cancelAll();
+
+  String localTimeZone =
+      await AwesomeNotifications().getLocalTimeZoneIdentifier();
+
+  await AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: 10,
+      channelKey: 'basic_channel',
+      actionType: ActionType.Default,
+      title: 'Hello World!',
+      body: 'This is my first notification!',
+    ),
+    // schedule: NotificationInterval(
+    //   interval: time,
+    //   timeZone: localTimeZone,
+    //   repeats: true,
+    // ),
+  );
+}
 
 class NotificationController {
   /// Use this method to detect when a new notification or a schedule is created
@@ -32,33 +62,36 @@ class NotificationController {
 
     // Navigate into pages, avoiding to open the notification details page over another details page already opened
     MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-        '/notification-page',
-        (route) =>
-            (route.settings.name != '/notification-page') || route.isFirst,
-        arguments: receivedAction);
+      '/notification-page',
+      (route) => (route.settings.name != '/notification-page') || route.isFirst,
+      arguments: receivedAction,
+    );
   }
 }
 
 void main() {
   AwesomeNotifications().initialize(
-      // set the icon to null if you want to use the default app icon
-      null,
-      [
-        NotificationChannel(
-            channelGroupKey: 'basic_channel_group',
-            channelKey: 'basic_channel',
-            channelName: 'Basic notifications',
-            channelDescription: 'Notification channel for basic tests',
-            defaultColor: const Color(0xFF9D50DD),
-            ledColor: Colors.white)
-      ],
-      // Channel groups are only visual and are not required
-      channelGroups: [
-        NotificationChannelGroup(
-            channelGroupKey: 'basic_channel_group',
-            channelGroupName: 'Basic group')
-      ],
-      debug: true);
+    // set the icon to null if you want to use the default app icon
+    null,
+    [
+      NotificationChannel(
+        channelGroupKey: 'basic_channel_group',
+        channelKey: 'basic_channel',
+        channelName: 'Basic notifications',
+        channelDescription: 'Notification channel for basic tests',
+        defaultColor: const Color(0xFF9D50DD),
+        ledColor: Colors.white,
+      ),
+    ],
+    // Channel groups are only visual and are not required
+    channelGroups: [
+      NotificationChannelGroup(
+        channelGroupKey: 'basic_channel_group',
+        channelGroupName: 'Basic group',
+      )
+    ],
+    debug: true,
+  );
   runApp(const MyApp());
 }
 
@@ -93,14 +126,7 @@ class _MyAppState extends State<MyApp> {
         // This is very important to not harm the user experience
         AwesomeNotifications().requestPermissionToSendNotifications();
       } else {
-        AwesomeNotifications().createNotification(
-            content: NotificationContent(
-          id: 10,
-          channelKey: 'basic_channel',
-          actionType: ActionType.Default,
-          title: 'Hello World!',
-          body: 'This is my first notification!',
-        ));
+        createNotification(60);
       }
     });
 
@@ -178,6 +204,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final Location location = Location();
 
   void _incrementCounter() {
     setState(() {
@@ -209,10 +236,10 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         centerTitle: true,
       ),
-      body: const Center(
+      body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
+        child: ListView(
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
           // children horizontally, and tries to be as tall as its parent.
@@ -226,23 +253,37 @@ class _MyHomePageState extends State<MyHomePage> {
           // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
+          // mainAxisAlignment: MainAxisAlignment.center,
+
+          children: [
+            const Text(
               'Check with me every:',
             ),
             DropdownMenu(
-              dropdownMenuEntries: [
+              onSelected: (value) => createNotification(value!),
+              dropdownMenuEntries: const [
                 DropdownMenuEntry(
                   label: 'Hour',
-                  value: 1,
+                  value: 600,
+                ),
+                DropdownMenuEntry(
+                  label: '6 Hours',
+                  value: 600 * 6,
+                ),
+                DropdownMenuEntry(
+                  label: '8 Hours',
+                  value: 600 * 8,
+                ),
+                DropdownMenuEntry(
+                  label: '24 Hours',
+                  value: 600 * 24,
                 ),
               ],
             ),
-            Text(
+            const Text(
               'Share my status with:',
             ),
-            DropdownMenu(
+            const DropdownMenu(
               enableSearch: false,
               dropdownMenuEntries: [
                 DropdownMenuEntry(
@@ -259,6 +300,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
+            const PermissionStatusWidget(),
+            const Divider(height: 32),
+            const ServiceEnabledWidget(),
+            const Divider(height: 32),
+            const GetLocationWidget(),
+            const Divider(height: 32),
+            const ListenLocationWidget(),
+            const Divider(height: 32),
+            const ChangeSettings(),
+            const Divider(height: 32),
+            const EnableInBackgroundWidget(),
+            const Divider(height: 32),
+            const ChangeNotificationWidget()
           ],
         ),
       ),

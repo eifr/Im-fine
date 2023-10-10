@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:location/location.dart';
 
 class MyNotificationPage extends StatefulWidget {
   const MyNotificationPage({super.key, receivedAction});
@@ -16,6 +19,34 @@ class _MyNotificationPageState extends State<MyNotificationPage> {
   List<BiometricType>? _availableBiometrics;
   String _authorized = 'Not Authorized';
   bool _isAuthenticating = false;
+  final Location location = Location();
+
+  LocationData? _location;
+  StreamSubscription<LocationData>? _locationSubscription;
+  String? _error;
+
+  Future<void> _listenLocation() async {
+    _locationSubscription =
+        location.onLocationChanged.handleError((dynamic err) {
+      if (err is PlatformException) {
+        setState(() {
+          _error = err.code;
+        });
+      }
+      _locationSubscription?.cancel();
+      setState(() {
+        _locationSubscription = null;
+      });
+    }).listen((currentLocation) {
+      print(currentLocation);
+      setState(() {
+        _error = null;
+
+        _location = currentLocation;
+      });
+    });
+    setState(() {});
+  }
 
   @override
   void initState() {
@@ -25,6 +56,12 @@ class _MyNotificationPageState extends State<MyNotificationPage> {
               ? _SupportState.supported
               : _SupportState.unsupported),
         );
+    _authenticate().then((_) {
+      if (_authorized != "Authorized") {
+        _listenLocation();
+      }
+      SystemNavigator.pop();
+    });
   }
 
   Future<void> _checkBiometrics() async {
@@ -137,79 +174,78 @@ class _MyNotificationPageState extends State<MyNotificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: ListView(
-          padding: const EdgeInsets.only(top: 30),
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                if (_supportState == _SupportState.unknown)
-                  const CircularProgressIndicator()
-                else if (_supportState == _SupportState.supported)
-                  const Text('This device is supported')
-                else
-                  const Text('This device is not supported'),
-                const Divider(height: 100),
-                Text('Can check biometrics: $_canCheckBiometrics\n'),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text('Authenticate'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.only(top: 30),
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              if (_supportState == _SupportState.unknown)
+                const CircularProgressIndicator()
+              else if (_supportState == _SupportState.supported)
+                const Text('This device is supported')
+              else
+                const Text('This device is not supported'),
+              const Divider(height: 100),
+              Text('Can check biometrics: $_canCheckBiometrics\n'),
+              ElevatedButton(
+                onPressed: _checkBiometrics,
+                child: const Text('Check biometrics'),
+              ),
+              const Divider(height: 100),
+              Text('Available biometrics: $_availableBiometrics\n'),
+              ElevatedButton(
+                onPressed: _getAvailableBiometrics,
+                child: const Text('Get available biometrics'),
+              ),
+              const Divider(height: 100),
+              Text('Current State: $_authorized\n'),
+              if (_isAuthenticating)
                 ElevatedButton(
-                  onPressed: _checkBiometrics,
-                  child: const Text('Check biometrics'),
-                ),
-                const Divider(height: 100),
-                Text('Available biometrics: $_availableBiometrics\n'),
-                ElevatedButton(
-                  onPressed: _getAvailableBiometrics,
-                  child: const Text('Get available biometrics'),
-                ),
-                const Divider(height: 100),
-                Text('Current State: $_authorized\n'),
-                if (_isAuthenticating)
-                  ElevatedButton(
-                    onPressed: _cancelAuthentication,
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text('Cancel Authentication'),
-                        Icon(Icons.cancel),
-                      ],
-                    ),
-                  )
-                else
-                  Column(
+                  onPressed: _cancelAuthentication,
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      ElevatedButton(
-                        onPressed: _authenticate,
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text('Authenticate'),
-                            Icon(Icons.perm_device_information),
-                          ],
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: _authenticateWithBiometrics,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text(_isAuthenticating
-                                ? 'Cancel'
-                                : 'Authenticate: biometrics only'),
-                            const Icon(Icons.fingerprint),
-                          ],
-                        ),
-                      ),
+                      Text('Cancel Authentication'),
+                      Icon(Icons.cancel),
                     ],
                   ),
-              ],
-            ),
-          ],
-        ),
+                )
+              else
+                Column(
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: _authenticate,
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text('Authenticate'),
+                          Icon(Icons.perm_device_information),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: _authenticateWithBiometrics,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(_isAuthenticating
+                              ? 'Cancel'
+                              : 'Authenticate: biometrics only'),
+                          const Icon(Icons.fingerprint),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+        ],
       ),
     );
   }
