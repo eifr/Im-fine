@@ -3,7 +3,7 @@
         android:label="im_safe"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <activity
+        <FragmentActivity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
@@ -23,7 +23,7 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
+        </FragmentActivity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
@@ -32,4 +32,5 @@
     </application>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
 </manifest>

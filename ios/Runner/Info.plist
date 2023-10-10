@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>We Identify the user to be the owner of the phone to make sure they are safe</string>
 </dict>
 </plist>

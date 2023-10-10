@@ -42,7 +42,7 @@ class NotificationController {
 void main() {
   AwesomeNotifications().initialize(
       // set the icon to null if you want to use the default app icon
-      'resource://drawable/res_app_icon',
+      null,
       [
         NotificationChannel(
             channelGroupKey: 'basic_channel_group',
@@ -118,13 +118,15 @@ class _MyAppState extends State<MyApp> {
         switch (settings.name) {
           case '/':
             return MaterialPageRoute(
-                builder: (context) => MyHomePage(title: MyApp.name));
+                builder: (context) => const MyHomePage(title: MyApp.name));
 
           case '/notification-page':
             return MaterialPageRoute(builder: (context) {
               final ReceivedAction receivedAction =
                   settings.arguments as ReceivedAction;
-              return MyNotificationPage(receivedAction: receivedAction);
+              return MyNotificationPage(
+                receivedAction: receivedAction,
+              );
             });
 
           default:
