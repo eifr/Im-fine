@@ -6,7 +6,12 @@ import 'package:local_auth/local_auth.dart';
 import 'package:location/location.dart';
 
 class MyNotificationPage extends StatefulWidget {
-  const MyNotificationPage({super.key, receivedAction});
+  final void Function() subscribeToLocation;
+  const MyNotificationPage({
+    super.key,
+    receivedAction,
+    required this.subscribeToLocation,
+  });
 
   @override
   State<MyNotificationPage> createState() => _MyNotificationPageState();
@@ -22,31 +27,7 @@ class _MyNotificationPageState extends State<MyNotificationPage> {
   final Location location = Location();
 
   LocationData? _location;
-  StreamSubscription<LocationData>? _locationSubscription;
   String? _error;
-
-  Future<void> _listenLocation() async {
-    _locationSubscription =
-        location.onLocationChanged.handleError((dynamic err) {
-      if (err is PlatformException) {
-        setState(() {
-          _error = err.code;
-        });
-      }
-      _locationSubscription?.cancel();
-      setState(() {
-        _locationSubscription = null;
-      });
-    }).listen((currentLocation) {
-      print(currentLocation);
-      setState(() {
-        _error = null;
-
-        _location = currentLocation;
-      });
-    });
-    setState(() {});
-  }
 
   @override
   void initState() {
@@ -58,7 +39,7 @@ class _MyNotificationPageState extends State<MyNotificationPage> {
         );
     _authenticate().then((_) {
       if (_authorized != "Authorized") {
-        _listenLocation();
+        widget.subscribeToLocation();
       }
       SystemNavigator.pop();
     });

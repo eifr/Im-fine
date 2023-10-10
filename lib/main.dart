@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:flutter/services.dart';
+import 'package:im_safe/components/im-safe-button.dart';
 import 'package:im_safe/location/change_notification.dart';
 import 'package:im_safe/location/change_settings.dart';
 import 'package:im_safe/location/enable_in_background.dart';
@@ -108,6 +112,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  StreamSubscription<LocationData>? _locationSubscription;
+  final Location location = Location();
+  LocationData? _location;
+  String? _error;
+
   @override
   void initState() {
     // Only after at least the action method is set, the notification events are delivered
@@ -133,6 +142,38 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
+  Future<void> listenLocation() async {
+    await location.enableBackgroundMode();
+
+    _locationSubscription =
+        location.onLocationChanged.handleError((dynamic err) {
+      if (err is PlatformException) {
+        setState(() {
+          _error = err.code;
+        });
+      }
+      _locationSubscription?.cancel();
+      setState(() {
+        _locationSubscription = null;
+      });
+    }).listen((currentLocation) {
+      print(currentLocation);
+      setState(() {
+        _error = null;
+
+        _location = currentLocation;
+      });
+    });
+    setState(() {});
+  }
+
+  Future stopListen() async {
+    await _locationSubscription?.cancel();
+    setState(() {
+      _locationSubscription = null;
+    });
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -144,7 +185,11 @@ class _MyAppState extends State<MyApp> {
         switch (settings.name) {
           case '/':
             return MaterialPageRoute(
-                builder: (context) => const MyHomePage(title: MyApp.name));
+              builder: (context) => MyHomePage(
+                title: MyApp.name,
+                stopListen: stopListen,
+              ),
+            );
 
           case '/notification-page':
             return MaterialPageRoute(builder: (context) {
@@ -152,6 +197,7 @@ class _MyAppState extends State<MyApp> {
                   settings.arguments as ReceivedAction;
               return MyNotificationPage(
                 receivedAction: receivedAction,
+                subscribeToLocation: listenLocation,
               );
             });
 
@@ -179,13 +225,22 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: "I'm fine"),
+      home: MyHomePage(
+        title: "I'm fine",
+        stopListen: stopListen,
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  final void Function() stopListen;
+
+  const MyHomePage({
+    super.key,
+    required this.title,
+    required this.stopListen,
+  });
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -300,6 +355,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
+            ImSafeButton(
+              stopListen: widget.stopListen,
+            ),
+            const Divider(height: 32),
             const PermissionStatusWidget(),
             const Divider(height: 32),
             const ServiceEnabledWidget(),
