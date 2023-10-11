@@ -92,7 +92,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     label: const Text(
                       'Check with me every:',
                     ),
-                    onSelected: (value) => createNotification(value!),
+                    onSelected: (value) => {
+                      // createNotification(value!)
+                    },
                     dropdownMenuEntries: const [
                       DropdownMenuEntry(
                         label: 'Hour',
