@@ -44,8 +44,8 @@ Future<void> createNotification(int time) async {
   );
   await flutterLocalNotificationsPlugin.show(
     0,
-    'plain title',
-    'plain body',
+    'Are you OK?',
+    null,
     notificationDetails,
     payload: 'item x',
   );
@@ -221,7 +221,7 @@ class _MyAppState extends State<MyApp> {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
     createNotification(60);
-    // getLocationPermissions(location);
+    getLocationPermissions(location);
     super.initState();
   }
 
