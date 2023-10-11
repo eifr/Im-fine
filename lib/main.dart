@@ -27,6 +27,27 @@ Future<void> createNotification(int time) async {
   );
 }
 
+Future<void> enableInBackground(Location location) async {
+  final enabledInBackground = await location.isBackgroundModeEnabled();
+  if (!enabledInBackground) {
+    await location.enableBackgroundMode();
+  }
+}
+
+Future<void> getLocationPermissions(Location location) async {
+  final permissionGrantedResult = await location.hasPermission();
+  if (permissionGrantedResult != PermissionStatus.granted) {
+    final permissionRequestedResult = await location.requestPermission();
+    if (permissionRequestedResult != PermissionStatus.granted) {
+      await getLocationPermissions(location);
+    } else {
+      await enableInBackground(location);
+    }
+  } else {
+    await enableInBackground(location);
+  }
+}
+
 class NotificationController {
   /// Use this method to detect when a new notification or a schedule is created
   @pragma("vm:entry-point")
@@ -138,33 +159,49 @@ class _MyAppState extends State<MyApp> {
         createNotification(60);
       }
     });
-
+    getLocationPermissions(location);
     super.initState();
   }
 
   Future<void> listenLocation() async {
-    await location.enableBackgroundMode();
+    try {
+      await location.requestService();
+      await location.enableBackgroundMode();
 
-    _locationSubscription =
-        location.onLocationChanged.handleError((dynamic err) {
-      if (err is PlatformException) {
+      _locationSubscription =
+          location.onLocationChanged.handleError((dynamic err) {
+        if (err is PlatformException) {
+          setState(() {
+            _error = err.code;
+          });
+        }
+        _locationSubscription?.cancel();
         setState(() {
-          _error = err.code;
+          _locationSubscription = null;
         });
-      }
-      _locationSubscription?.cancel();
-      setState(() {
-        _locationSubscription = null;
-      });
-    }).listen((currentLocation) {
-      print(currentLocation);
-      setState(() {
-        _error = null;
+      }).listen((currentLocation) {
+        supabase.from('user_status').insert([
+          {
+            'is_fine': false,
+            'user_id': supabase.auth.currentUser?.id,
+            'point':
+                'POINT(${currentLocation.latitude} ${currentLocation.longitude})',
+          },
+        ]).catchError((e) {
+          print(e);
+        });
 
-        _location = currentLocation;
+        print(currentLocation);
+        setState(() {
+          _error = null;
+
+          _location = currentLocation;
+        });
       });
-    });
-    setState(() {});
+      setState(() {});
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future stopListen() async {

@@ -142,26 +142,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   ImSafeButton(
                     stopListen: widget.stopListen,
                   ),
-                  OutlinedButton.icon(
+                  TextButton.icon(
                     icon: const Icon(Icons.exit_to_app),
                     onPressed: supabase.auth.signOut,
                     label: const Text('Sign Out'),
                   ),
-                  // const PermissionStatusWidget(),
                 ],
               ),
-              // const Divider(height: 32),
-              // const ServiceEnabledWidget(),
-              // const Divider(height: 32),
-              // const GetLocationWidget(),
-              // const Divider(height: 32),
-              // const ListenLocationWidget(),
-              // const Divider(height: 32),
-              // const ChangeSettings(),
-              // const Divider(height: 32),
-              // const EnableInBackgroundWidget(),
-              // const Divider(height: 32),
-              // const ChangeNotificationWidget()
             ],
           ),
         ),
