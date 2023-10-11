@@ -29,9 +29,10 @@ class _ImSafeButton extends State<ImSafeButton> {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.shield_outlined),
       onPressed: widget.stopListen,
-      child: const Text("I'm Safe"),
+      label: const Text("I'm Fine"),
     );
   }
 }

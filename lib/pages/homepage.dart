@@ -85,10 +85,10 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
 
             children: [
-              const Text(
-                'Check with me every:',
-              ),
               DropdownMenu(
+                label: const Text(
+                  'Check with me every:',
+                ),
                 onSelected: (value) => createNotification(value!),
                 dropdownMenuEntries: const [
                   DropdownMenuEntry(
@@ -109,10 +109,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
-              const Text(
-                'Share my status with:',
-              ),
+              const SizedBox(height: 30),
               const DropdownMenu(
+                label: Text(
+                  'Share my status with:',
+                ),
                 enableSearch: false,
                 dropdownMenuEntries: [
                   DropdownMenuEntry(
@@ -133,9 +134,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ImSafeButton(
                 stopListen: widget.stopListen,
               ),
-              OutlinedButton(
+              OutlinedButton.icon(
+                icon: const Icon(Icons.exit_to_app),
                 onPressed: supabase.auth.signOut,
-                child: const Text('Sign Out'),
+                label: const Text('Sign Out'),
               ),
               // const PermissionStatusWidget(),
               // const Divider(height: 32),

@@ -11,16 +11,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 Future<void> createNotification(int time) async {
   await AwesomeNotifications().cancelAll();
 
-  String localTimeZone =
-      await AwesomeNotifications().getLocalTimeZoneIdentifier();
-
   await AwesomeNotifications().createNotification(
     content: NotificationContent(
       id: 10,
       channelKey: 'basic_channel',
       actionType: ActionType.Default,
-      title: 'Hello World!',
-      body: 'This is my first notification!',
+      title: 'Are you ok?',
+      // body: 'This is my first notification!',
     ),
     // schedule: NotificationInterval(
     //   interval: time,
@@ -107,8 +104,8 @@ class MyApp extends StatefulWidget {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
-  static const String name = 'Awesome Notifications - Example App';
-  static const Color mainColor = Colors.deepPurple;
+  static const String name = "I'm Fine";
+  // static const Color mainColor = Colors.deepPurple;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -225,11 +222,13 @@ class _MyAppState extends State<MyApp> {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+        ),
         useMaterial3: true,
       ),
       home: MyHomePage(
-        title: "I'm fine",
+        title: "I'm Fine",
         stopListen: stopListen,
       ),
     );
