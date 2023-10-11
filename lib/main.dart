@@ -37,8 +37,10 @@ Future<void> createNotification(int time) async {
     ticker: 'ticker',
     icon: '@mipmap/ic_launcher',
   );
+  const darwinNotificationDetails = DarwinNotificationDetails();
   const NotificationDetails notificationDetails = NotificationDetails(
     android: androidNotificationDetails,
+    iOS: darwinNotificationDetails,
   );
   await flutterLocalNotificationsPlugin.show(
     0,
