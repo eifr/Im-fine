@@ -85,61 +85,71 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
 
             children: [
-              DropdownMenu(
-                label: const Text(
-                  'Check with me every:',
-                ),
-                onSelected: (value) => createNotification(value!),
-                dropdownMenuEntries: const [
-                  DropdownMenuEntry(
-                    label: 'Hour',
-                    value: 600,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  DropdownMenu(
+                    label: const Text(
+                      'Check with me every:',
+                    ),
+                    onSelected: (value) => createNotification(value!),
+                    dropdownMenuEntries: const [
+                      DropdownMenuEntry(
+                        label: 'Hour',
+                        value: 600,
+                      ),
+                      DropdownMenuEntry(
+                        label: '6 Hours',
+                        value: 600 * 6,
+                      ),
+                      DropdownMenuEntry(
+                        label: '8 Hours',
+                        value: 600 * 8,
+                      ),
+                      DropdownMenuEntry(
+                        label: '24 Hours',
+                        value: 600 * 24,
+                      ),
+                    ],
                   ),
-                  DropdownMenuEntry(
-                    label: '6 Hours',
-                    value: 600 * 6,
-                  ),
-                  DropdownMenuEntry(
-                    label: '8 Hours',
-                    value: 600 * 8,
-                  ),
-                  DropdownMenuEntry(
-                    label: '24 Hours',
-                    value: 600 * 24,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              const DropdownMenu(
-                label: Text(
-                  'Share my status with:',
-                ),
-                enableSearch: false,
-                dropdownMenuEntries: [
-                  DropdownMenuEntry(
-                    label: 'List people',
-                    value: 1,
-                  ),
-                  DropdownMenuEntry(
-                    label: 'Public',
-                    value: 1,
-                  ),
-                  DropdownMenuEntry(
-                    label: 'My contacts',
-                    value: 1,
+                  const SizedBox(height: 30),
+                  const DropdownMenu(
+                    label: Text(
+                      'Share my status with:',
+                    ),
+                    enableSearch: false,
+                    dropdownMenuEntries: [
+                      DropdownMenuEntry(
+                        label: 'List people',
+                        value: 1,
+                      ),
+                      DropdownMenuEntry(
+                        label: 'Public',
+                        value: 1,
+                      ),
+                      DropdownMenuEntry(
+                        label: 'My contacts',
+                        value: 1,
+                      ),
+                    ],
                   ),
                 ],
               ),
               const Divider(height: 32),
-              ImSafeButton(
-                stopListen: widget.stopListen,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ImSafeButton(
+                    stopListen: widget.stopListen,
+                  ),
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.exit_to_app),
+                    onPressed: supabase.auth.signOut,
+                    label: const Text('Sign Out'),
+                  ),
+                  // const PermissionStatusWidget(),
+                ],
               ),
-              OutlinedButton.icon(
-                icon: const Icon(Icons.exit_to_app),
-                onPressed: supabase.auth.signOut,
-                label: const Text('Sign Out'),
-              ),
-              // const PermissionStatusWidget(),
               // const Divider(height: 32),
               // const ServiceEnabledWidget(),
               // const Divider(height: 32),
