@@ -8,7 +8,7 @@ class ListenLocationWidget extends StatefulWidget {
   const ListenLocationWidget({super.key});
 
   @override
-  _ListenLocationState createState() => _ListenLocationState();
+  State<ListenLocationWidget> createState() => _ListenLocationState();
 }
 
 class _ListenLocationState extends State<ListenLocationWidget> {
@@ -50,9 +50,9 @@ class _ListenLocationState extends State<ListenLocationWidget> {
   @override
   void dispose() {
     _locationSubscription?.cancel();
-    setState(() {
-      _locationSubscription = null;
-    });
+    // setState(() {
+    //   _locationSubscription = null;
+    // });
     super.dispose();
   }
 

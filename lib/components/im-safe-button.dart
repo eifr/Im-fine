@@ -12,44 +12,26 @@ class ImSafeButton extends StatefulWidget {
   });
 
   @override
-  _ListenLocationState createState() => _ListenLocationState();
+  State<ImSafeButton> createState() => _ImSafeButton();
 }
 
-class _ListenLocationState extends State<ImSafeButton> {
+class _ImSafeButton extends State<ImSafeButton> {
   final Location location = Location();
   final LocalAuthentication auth = LocalAuthentication();
 
-  LocationData? _location;
   StreamSubscription<LocationData>? _locationSubscription;
-  String? _error;
 
   @override
   void dispose() {
     _locationSubscription?.cancel();
-    setState(() {
-      _locationSubscription = null;
-    });
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Listen location: ${_error ?? '${_location ?? "unknown"}'}',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        Row(
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: widget.stopListen,
-              child: const Text("I'm Safe"),
-            )
-          ],
-        ),
-      ],
+    return ElevatedButton(
+      onPressed: widget.stopListen,
+      child: const Text("I'm Safe"),
     );
   }
 }

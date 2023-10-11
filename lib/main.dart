@@ -3,16 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/services.dart';
-import 'package:im_safe/components/im-safe-button.dart';
-import 'package:im_safe/location/change_notification.dart';
-import 'package:im_safe/location/change_settings.dart';
-import 'package:im_safe/location/enable_in_background.dart';
-import 'package:im_safe/location/get_location.dart';
-import 'package:im_safe/location/listen_location.dart';
+import 'package:im_safe/pages/homepage.dart';
 import 'package:im_safe/notification-page.dart';
-import 'package:im_safe/location/permission_status.dart';
-import 'package:im_safe/location/service_enabled.dart';
 import 'package:location/location.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> createNotification(int time) async {
   await AwesomeNotifications().cancelAll();
@@ -73,8 +67,14 @@ class NotificationController {
   }
 }
 
-void main() {
-  AwesomeNotifications().initialize(
+void main() async {
+  await Supabase.initialize(
+    url: 'https://oknhzacmloylwmrxcsoa.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbmh6YWNtbG95bHdtcnhjc29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTcwMDMxMzYsImV4cCI6MjAxMjU3OTEzNn0.Rko777OCxSIUrhq3rJ0Xsk9Th24jD24XDW7pXZlYuAQ',
+  );
+
+  await AwesomeNotifications().initialize(
     // set the icon to null if you want to use the default app icon
     null,
     [
@@ -96,8 +96,11 @@ void main() {
     ],
     debug: true,
   );
+
   runApp(const MyApp());
 }
+
+final supabase = Supabase.instance.client;
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -222,164 +225,13 @@ class _MyAppState extends State<MyApp> {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
       home: MyHomePage(
         title: "I'm fine",
         stopListen: stopListen,
       ),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  final void Function() stopListen;
-
-  const MyHomePage({
-    super.key,
-    required this.title,
-    required this.stopListen,
-  });
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  final Location location = Location();
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-        centerTitle: true,
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: ListView(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          // mainAxisAlignment: MainAxisAlignment.center,
-
-          children: [
-            const Text(
-              'Check with me every:',
-            ),
-            DropdownMenu(
-              onSelected: (value) => createNotification(value!),
-              dropdownMenuEntries: const [
-                DropdownMenuEntry(
-                  label: 'Hour',
-                  value: 600,
-                ),
-                DropdownMenuEntry(
-                  label: '6 Hours',
-                  value: 600 * 6,
-                ),
-                DropdownMenuEntry(
-                  label: '8 Hours',
-                  value: 600 * 8,
-                ),
-                DropdownMenuEntry(
-                  label: '24 Hours',
-                  value: 600 * 24,
-                ),
-              ],
-            ),
-            const Text(
-              'Share my status with:',
-            ),
-            const DropdownMenu(
-              enableSearch: false,
-              dropdownMenuEntries: [
-                DropdownMenuEntry(
-                  label: 'List people',
-                  value: 1,
-                ),
-                DropdownMenuEntry(
-                  label: 'Public',
-                  value: 1,
-                ),
-                DropdownMenuEntry(
-                  label: 'My contacts',
-                  value: 1,
-                ),
-              ],
-            ),
-            ImSafeButton(
-              stopListen: widget.stopListen,
-            ),
-            const Divider(height: 32),
-            const PermissionStatusWidget(),
-            const Divider(height: 32),
-            const ServiceEnabledWidget(),
-            const Divider(height: 32),
-            const GetLocationWidget(),
-            const Divider(height: 32),
-            const ListenLocationWidget(),
-            const Divider(height: 32),
-            const ChangeSettings(),
-            const Divider(height: 32),
-            const EnableInBackgroundWidget(),
-            const Divider(height: 32),
-            const ChangeNotificationWidget()
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

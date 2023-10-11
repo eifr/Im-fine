@@ -53,6 +53,16 @@
 	<string>When user can't get the phone to verify safety, their location should be shared with contacts</string>
     <key>NSContactsUsageDescription</key>
     <string>We want to sync contacts</string>
-
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>io.supabase.imsafe</string>
+      </array>
+    </dict>
+  </array>
 </dict>
 </plist>
