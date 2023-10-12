@@ -157,9 +157,11 @@ class FollowersControl extends StatelessWidget {
       ),
       onSelected: (value) => {
         showModalBottomSheet(
+          isScrollControlled: true,
           enableDrag: true,
           showDragHandle: true,
           context: context,
+          useSafeArea: true,
           builder: (context) {
             return const ContactsList();
           },
@@ -197,6 +199,7 @@ class _ContactsListState extends State<ContactsList> {
   List<Contact>? _contacts;
   bool _permissionDenied = false;
   List _enabledContacts = [];
+  List _filteredContacts = [];
 
   @override
   void initState() {
@@ -213,45 +216,53 @@ class _ContactsListState extends State<ContactsList> {
       final contacts = await FlutterContacts.getContacts(withProperties: true);
       setState(() => _contacts = contacts);
     }
-    final databaseUsers = (await supabase.from("follows").select().filter(
-          'allowed_number',
-          'in',
-          _contacts?.where((e) => e.phones.isNotEmpty).map(
-                (e) => fixPhoneNumber(e.phones.first.number),
-              ),
-        ) as List);
+    final databaseUsers = (await supabase.from("follows").select() as List);
 
     Map databaseUsersMap = {
       for (var user in databaseUsers) '${user['allowed_number']}': user
     };
 
     for (final contact in _contacts!) {
+      if (contact.phones.isEmpty) {
+        continue;
+      }
       final number = fixPhoneNumber(contact.phones.first.number);
-      if (databaseUsersMap.containsKey(number)) {
-        if (databaseUsersMap[number]['is_allowed']) {
-          enabledContacts.insert(0, {
+      if (databaseUsersMap[number]?['is_allowed'] == true) {
+        enabledContacts.insert(
+          0,
+          {
             "contact": contact,
-            "allowed": databaseUsersMap[number]['is_allowed'],
-            "enabled": true
-          });
-        } else {
-          enabledContacts.insert(1, {
-            "contact": contact,
-            "allowed": databaseUsersMap[number]['is_allowed'],
-            "enabled": true
-          });
-        }
+            "enabled": true,
+            "id": databaseUsersMap[number]?['id'],
+          },
+        );
       } else {
-        enabledContacts.add({
-          "contact": contact,
-          "allowed": databaseUsersMap[number]?['is_allowed'],
-          "enabled": false
-        });
+        enabledContacts.add(
+          {
+            "contact": contact,
+            "enabled": false,
+            "id": databaseUsersMap[number]?['id']
+          },
+        );
       }
     }
 
     setState(() {
       _enabledContacts = enabledContacts;
+      _filteredContacts = enabledContacts;
+    });
+  }
+
+  void filterSearchResults(String query) {
+    setState(() {
+      _filteredContacts = query.isNotEmpty
+          ? _enabledContacts
+              .where((item) => item['contact']
+                  .displayName
+                  .toLowerCase()
+                  .contains(query.toLowerCase()))
+              .toList()
+          : _enabledContacts;
     });
   }
 
@@ -261,32 +272,56 @@ class _ContactsListState extends State<ContactsList> {
       return const Center(child: Text('Permission denied'));
     }
 
-    return ListView.builder(
-        itemCount: _enabledContacts.length,
-        itemBuilder: (context, i) {
-          return CheckboxListTile(
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
             onChanged: (value) {
-              _enabledContacts[i]['allowed'] = value;
-              if (_enabledContacts[i]['contact'].phones.isNotEmpty) {
-                supabase
-                    .from('follows')
-                    .upsert({
-                      'user_id': supabase.auth.currentUser?.id,
-                      'allowed_number': fixPhoneNumber(
-                          _enabledContacts[i]['contact'].phones.first.number),
-                      'is_allowed': value
-                    })
-                    .then((value) => _fetchContacts())
-                    .catchError((error) {
-                      print(error);
-                    });
-              }
+              filterSearchResults(value);
             },
-            value: _enabledContacts[i]['allowed'] ?? false,
-            title: Text(_enabledContacts[i]['contact'].displayName),
-            enabled: _enabledContacts[i]['enabled'],
-          );
-        });
+            decoration: const InputDecoration(
+              labelText: "Search",
+              hintText: "Search",
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(25.0)),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+              itemCount: _filteredContacts.length,
+              itemBuilder: (context, i) {
+                return CheckboxListTile(
+                  onChanged: (value) {
+                    if (_filteredContacts[i]['contact'].phones.isNotEmpty) {
+                      supabase
+                          .from('follows')
+                          .upsert({
+                            'user_id': supabase.auth.currentUser?.id,
+                            'id': _filteredContacts[i]['id'],
+                            'allowed_number': fixPhoneNumber(
+                                _filteredContacts[i]['contact']
+                                    .phones
+                                    .first
+                                    .number),
+                            'is_allowed': value
+                          })
+                          .then((value) => _fetchContacts())
+                          .catchError((error) {
+                            print(error);
+                          });
+                    }
+                  },
+                  value: _filteredContacts[i]['enabled'] ?? false,
+                  title: Text(_filteredContacts[i]['contact'].displayName),
+                );
+              }),
+        ),
+      ],
+    );
   }
 }
 
