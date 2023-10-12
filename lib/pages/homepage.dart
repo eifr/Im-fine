@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_contacts/contact.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:im_safe/components/im-safe-button.dart';
 import 'package:im_safe/main.dart';
 import 'package:im_safe/pages/login.dart';
@@ -115,26 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                   const SizedBox(height: 30),
-                  const DropdownMenu(
-                    label: Text(
-                      'Share my status with:',
-                    ),
-                    enableSearch: false,
-                    dropdownMenuEntries: [
-                      DropdownMenuEntry(
-                        label: 'List people',
-                        value: 1,
-                      ),
-                      DropdownMenuEntry(
-                        label: 'Public',
-                        value: 1,
-                      ),
-                      DropdownMenuEntry(
-                        label: 'My contacts',
-                        value: 1,
-                      ),
-                    ],
-                  ),
+                  const FollowersControl(),
                 ],
               ),
               const Divider(height: 32),
@@ -159,4 +142,118 @@ class _MyHomePageState extends State<MyHomePage> {
       return const LoginPage();
     }
   }
+}
+
+class FollowersControl extends StatelessWidget {
+  const FollowersControl({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownMenu(
+      label: const Text(
+        'Share my status with:',
+      ),
+      onSelected: (value) => {
+        showModalBottomSheet(
+          enableDrag: true,
+          showDragHandle: true,
+          context: context,
+          builder: (context) {
+            return const ContactsList();
+          },
+        )
+      },
+      enableSearch: false,
+      dropdownMenuEntries: const [
+        DropdownMenuEntry(
+          label: 'List People',
+          value: 1,
+        ),
+        // DropdownMenuEntry(
+        //   label: 'Public',
+        //   value: 1,
+        // ),
+        DropdownMenuEntry(
+          label: 'All My Contacts',
+          value: 1,
+        ),
+      ],
+    );
+  }
+}
+
+class ContactsList extends StatefulWidget {
+  const ContactsList({
+    super.key,
+  });
+
+  @override
+  State<ContactsList> createState() => _ContactsListState();
+}
+
+class _ContactsListState extends State<ContactsList> {
+  List<Contact>? _contacts;
+  bool _permissionDenied = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchContacts();
+  }
+
+  Future _fetchContacts() async {
+    if (!await FlutterContacts.requestPermission(readonly: true)) {
+      setState(() => _permissionDenied = true);
+    } else {
+      final contacts = await FlutterContacts.getContacts();
+      setState(() => _contacts = contacts);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_permissionDenied) {
+      return const Center(child: Text('Permission denied'));
+    }
+    if (_contacts == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    return ListView.builder(
+      itemCount: _contacts!.length,
+      itemBuilder: (context, i) => CheckboxListTile(
+        // selected: true,
+        onChanged: (value) {},
+        value: true,
+        title: Text(_contacts![i].displayName),
+        // onTap: () async {
+        //   final fullContact =
+        //       await FlutterContacts.getContact(_contacts![i].id);
+        //   await Navigator.of(context).push(
+        //     MaterialPageRoute(
+        //       builder: (_) => ContactPage(fullContact!),
+        //     ),
+        //   );
+        // },
+      ),
+    );
+  }
+}
+
+class ContactPage extends StatelessWidget {
+  final Contact contact;
+  const ContactPage(this.contact, {super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+      appBar: AppBar(title: Text(contact.displayName)),
+      body: Column(children: [
+        Text('First name: ${contact.name.first}'),
+        Text('Last name: ${contact.name.last}'),
+        Text(
+            'Phone number: ${contact.phones.isNotEmpty ? contact.phones.first.number : '(none)'}'),
+        Text(
+            'Email address: ${contact.emails.isNotEmpty ? contact.emails.first.address : '(none)'}'),
+      ]));
 }
