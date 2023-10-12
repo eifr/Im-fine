@@ -23,7 +23,6 @@ class _ImSafeButton extends State<ImSafeButton> {
 
   @override
   void dispose() {
-    _locationSubscription?.cancel();
     super.dispose();
   }
 

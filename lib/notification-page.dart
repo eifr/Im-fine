@@ -26,7 +26,6 @@ class _MyNotificationPageState extends State<MyNotificationPage> {
   bool _isAuthenticating = false;
   final Location location = Location();
 
-  LocationData? _location;
   String? _error;
 
   @override
@@ -42,6 +41,8 @@ class _MyNotificationPageState extends State<MyNotificationPage> {
         widget.subscribeToLocation();
       }
       SystemNavigator.pop();
+    }).catchError(() {
+      widget.subscribeToLocation();
     });
   }
 
