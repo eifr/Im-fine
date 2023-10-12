@@ -196,8 +196,7 @@ class ContactsList extends StatefulWidget {
 class _ContactsListState extends State<ContactsList> {
   List<Contact>? _contacts;
   bool _permissionDenied = false;
-  Map _enabledContacts = {};
-  Map _disabledContacts = {};
+  List _enabledContacts = [];
 
   @override
   void initState() {
@@ -206,8 +205,7 @@ class _ContactsListState extends State<ContactsList> {
   }
 
   Future _fetchContacts() async {
-    Map enabledContacts = {};
-    Map disabledContacts = {};
+    List enabledContacts = [];
 
     if (!await FlutterContacts.requestPermission(readonly: true)) {
       setState(() => _permissionDenied = true);
@@ -224,25 +222,36 @@ class _ContactsListState extends State<ContactsList> {
         ) as List);
 
     Map databaseUsersMap = {
-      for (var user in databaseUsers)
-        '${user['allowed_number']}': 'valuesOf$user'
+      for (var user in databaseUsers) '${user['allowed_number']}': user
     };
 
     for (final contact in _contacts!) {
       final number = fixPhoneNumber(contact.phones.first.number);
       if (databaseUsersMap.containsKey(number)) {
-        enabledContacts[number] = {
-          "contact": contact,
-          "enabled": databaseUsersMap[number]['is_allowed']
-        };
+        if (databaseUsersMap[number]['is_allowed']) {
+          enabledContacts.insert(0, {
+            "contact": contact,
+            "allowed": databaseUsersMap[number]['is_allowed'],
+            "enabled": true
+          });
+        } else {
+          enabledContacts.insert(1, {
+            "contact": contact,
+            "allowed": databaseUsersMap[number]['is_allowed'],
+            "enabled": true
+          });
+        }
       } else {
-        disabledContacts[number] = contact;
+        enabledContacts.add({
+          "contact": contact,
+          "allowed": databaseUsersMap[number]?['is_allowed'],
+          "enabled": false
+        });
       }
     }
 
     setState(() {
       _enabledContacts = enabledContacts;
-      _disabledContacts = disabledContacts;
     });
   }
 
@@ -251,35 +260,33 @@ class _ContactsListState extends State<ContactsList> {
     if (_permissionDenied) {
       return const Center(child: Text('Permission denied'));
     }
-    // if (_enabledContacts == null) {
-    //   return const Center(child: CircularProgressIndicator());
-    // }
-    var state = false;
+
     return ListView.builder(
-      itemCount: _enabledContacts.length,
-      itemBuilder: (context, i) => CheckboxListTile(
-        selected: state,
-        onChanged: (value) {
-          state = true;
-          if (_contacts![i].phones.isNotEmpty) {
-            print(_contacts?[i].phones.first.number);
-            supabase.from('follows').upsert({
-              'user_id': supabase.auth.currentUser?.id,
-              'allowed_number':
-                  (_contacts?[i].phones.first.number)!.startsWith('0')
-                      ? '972${_contacts?[i].phones.first.number.substring(1)}'
-                      : _contacts?[i].phones.first.number,
-              'is_allowed': value
-            }).catchError((error) {
-              print(error);
-            });
-          }
-        },
-        value: false,
-        title: Text(_contacts![i].displayName),
-        // enabled: ,
-      ),
-    );
+        itemCount: _enabledContacts.length,
+        itemBuilder: (context, i) {
+          return CheckboxListTile(
+            onChanged: (value) {
+              _enabledContacts[i]['allowed'] = value;
+              if (_enabledContacts[i]['contact'].phones.isNotEmpty) {
+                supabase
+                    .from('follows')
+                    .upsert({
+                      'user_id': supabase.auth.currentUser?.id,
+                      'allowed_number': fixPhoneNumber(
+                          _enabledContacts[i]['contact'].phones.first.number),
+                      'is_allowed': value
+                    })
+                    .then((value) => _fetchContacts())
+                    .catchError((error) {
+                      print(error);
+                    });
+              }
+            },
+            value: _enabledContacts[i]['allowed'] ?? false,
+            title: Text(_enabledContacts[i]['contact'].displayName),
+            enabled: _enabledContacts[i]['enabled'],
+          );
+        });
   }
 }
 
