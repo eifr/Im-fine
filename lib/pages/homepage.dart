@@ -196,6 +196,8 @@ class ContactsList extends StatefulWidget {
 class _ContactsListState extends State<ContactsList> {
   List<Contact>? _contacts;
   bool _permissionDenied = false;
+  Map _enabledContacts = {};
+  Map _disabledContacts = {};
 
   @override
   void initState() {
@@ -204,12 +206,44 @@ class _ContactsListState extends State<ContactsList> {
   }
 
   Future _fetchContacts() async {
+    Map enabledContacts = {};
+    Map disabledContacts = {};
+
     if (!await FlutterContacts.requestPermission(readonly: true)) {
       setState(() => _permissionDenied = true);
     } else {
-      final contacts = await FlutterContacts.getContacts();
+      final contacts = await FlutterContacts.getContacts(withProperties: true);
       setState(() => _contacts = contacts);
     }
+    final databaseUsers = (await supabase.from("follows").select().filter(
+          'allowed_number',
+          'in',
+          _contacts?.where((e) => e.phones.isNotEmpty).map(
+                (e) => fixPhoneNumber(e.phones.first.number),
+              ),
+        ) as List);
+
+    Map databaseUsersMap = {
+      for (var user in databaseUsers)
+        '${user['allowed_number']}': 'valuesOf$user'
+    };
+
+    for (final contact in _contacts!) {
+      final number = fixPhoneNumber(contact.phones.first.number);
+      if (databaseUsersMap.containsKey(number)) {
+        enabledContacts[number] = {
+          "contact": contact,
+          "enabled": databaseUsersMap[number]['is_allowed']
+        };
+      } else {
+        disabledContacts[number] = contact;
+      }
+    }
+
+    setState(() {
+      _enabledContacts = enabledContacts;
+      _disabledContacts = disabledContacts;
+    });
   }
 
   @override
@@ -217,25 +251,33 @@ class _ContactsListState extends State<ContactsList> {
     if (_permissionDenied) {
       return const Center(child: Text('Permission denied'));
     }
-    if (_contacts == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    // if (_enabledContacts == null) {
+    //   return const Center(child: CircularProgressIndicator());
+    // }
+    var state = false;
     return ListView.builder(
-      itemCount: _contacts!.length,
+      itemCount: _enabledContacts.length,
       itemBuilder: (context, i) => CheckboxListTile(
-        // selected: true,
-        onChanged: (value) {},
-        value: true,
+        selected: state,
+        onChanged: (value) {
+          state = true;
+          if (_contacts![i].phones.isNotEmpty) {
+            print(_contacts?[i].phones.first.number);
+            supabase.from('follows').upsert({
+              'user_id': supabase.auth.currentUser?.id,
+              'allowed_number':
+                  (_contacts?[i].phones.first.number)!.startsWith('0')
+                      ? '972${_contacts?[i].phones.first.number.substring(1)}'
+                      : _contacts?[i].phones.first.number,
+              'is_allowed': value
+            }).catchError((error) {
+              print(error);
+            });
+          }
+        },
+        value: false,
         title: Text(_contacts![i].displayName),
-        // onTap: () async {
-        //   final fullContact =
-        //       await FlutterContacts.getContact(_contacts![i].id);
-        //   await Navigator.of(context).push(
-        //     MaterialPageRoute(
-        //       builder: (_) => ContactPage(fullContact!),
-        //     ),
-        //   );
-        // },
+        // enabled: ,
       ),
     );
   }
@@ -256,4 +298,10 @@ class ContactPage extends StatelessWidget {
         Text(
             'Email address: ${contact.emails.isNotEmpty ? contact.emails.first.address : '(none)'}'),
       ]));
+}
+
+String fixPhoneNumber(String phoneNumber) {
+  return phoneNumber.startsWith('0')
+      ? '972${phoneNumber.substring(1)}'
+      : phoneNumber;
 }
