@@ -220,7 +220,6 @@ class _MyAppState extends State<MyApp> {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
-    createNotification(60);
     getLocationPermissions(location);
     super.initState();
   }

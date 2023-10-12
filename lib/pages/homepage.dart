@@ -34,7 +34,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     _authStateSubscription = supabase.auth.onAuthStateChange.listen((data) {
       setState(() {
-        _session = data.session;
+        if(data.session != null) {
+          createNotification(60);
+          _session = data.session;
+        }
       });
     });
     super.initState();
