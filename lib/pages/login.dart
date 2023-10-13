@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Verified!')),
+          const SnackBar(content: Text('אומת!')),
         );
         _phoneNumberController.clear();
       }
