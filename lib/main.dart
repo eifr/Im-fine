@@ -246,7 +246,7 @@ class _MyAppState extends State<MyApp> {
             'is_fine': false,
             'user_id': supabase.auth.currentUser?.id,
             'point':
-                'POINT(${currentLocation.latitude} ${currentLocation.longitude})',
+                'POINT(${currentLocation.longitude} ${currentLocation.latitude})',
           },
         ]).catchError((e) {
           print(e);
