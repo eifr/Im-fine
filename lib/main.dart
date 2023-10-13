@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:im_safe/pages/homepage.dart';
 import 'package:im_safe/notification-page.dart';
 import 'package:location/location.dart';
@@ -44,7 +45,7 @@ Future<void> createNotification(int time) async {
   );
   await flutterLocalNotificationsPlugin.show(
     0,
-    'Are you OK?',
+    'הכל בסדר?',
     null,
     notificationDetails,
     payload: 'item x',
@@ -180,7 +181,7 @@ class MyApp extends StatefulWidget {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
-  static const String name = "I'm Fine";
+  static const String name = "אני בסדר";
   // static const Color mainColor = Colors.deepPurple;
 
   @override
@@ -266,10 +267,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future stopListen() async {
+    // await location.
     await _locationSubscription?.cancel();
+    await location.enableBackgroundMode(enable: false);
     setState(() {
       _locationSubscription = null;
     });
+
+    print('Location sub stopped');
   }
 
   // This widget is the root of your application.
@@ -323,11 +328,15 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blue,
         ),
+        textTheme: GoogleFonts.rubikTextTheme(),
         useMaterial3: true,
       ),
-      home: MyHomePage(
-        title: "I'm Fine",
-        stopListen: stopListen,
+      home: Directionality(
+        textDirection: TextDirection.rtl,
+        child: MyHomePage(
+          title: "אני בסדר",
+          stopListen: stopListen,
+        ),
       ),
     );
   }

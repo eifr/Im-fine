@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     _authStateSubscription = supabase.auth.onAuthStateChange.listen((data) {
       setState(() {
-        if(data.session != null) {
+        if (data.session != null) {
           createNotification(60);
           _session = data.session;
         }
@@ -58,85 +58,90 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
 
     if (_session != null) {
-      return Scaffold(
-        appBar: AppBar(
-          // TRY THIS: Try changing the color here to a specific color (to
-          // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-          // change color while the other colors stay the same.
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: Text(widget.title),
-          centerTitle: true,
-        ),
-        body: Center(
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
-          child: Column(
-            // Column is also a layout widget. It takes a list of children and
-            // arranges them vertically. By default, it sizes itself to fit its
-            // children horizontally, and tries to be as tall as its parent.
-            //
-            // Column has various properties to control how it sizes itself and
-            // how it positions its children. Here we use mainAxisAlignment to
-            // center the children vertically; the main axis here is the vertical
-            // axis because Columns are vertical (the cross axis would be
-            // horizontal).
-            //
-            // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-            // action in the IDE, or press "p" in the console), to see the
-            // wireframe for each widget.
-            mainAxisAlignment: MainAxisAlignment.center,
+      return SafeArea(
+        child: Scaffold(
+          // appBar: AppBar(
+          //   // TRY THIS: Try changing the color here to a specific color (to
+          //   // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+          //   // change color while the other colors stay the same.
+          //   // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          //   // Here we take the value from the MyHomePage object that was created by
+          //   // the App.build method, and use it to set our appbar title.
+          //   title: Text(widget.title),
+          //   centerTitle: true,
+          // ),
+          body: Center(
+            // Center is a layout widget. It takes a single child and positions it
+            // in the middle of the parent.
+            child: Column(
+              // Column is also a layout widget. It takes a list of children and
+              // arranges them vertically. By default, it sizes itself to fit its
+              // children horizontally, and tries to be as tall as its parent.
+              //
+              // Column has various properties to control how it sizes itself and
+              // how it positions its children. Here we use mainAxisAlignment to
+              // center the children vertically; the main axis here is the vertical
+              // axis because Columns are vertical (the cross axis would be
+              // horizontal).
+              //
+              // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+              // action in the IDE, or press "p" in the console), to see the
+              // wireframe for each widget.
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
 
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  DropdownMenu(
-                    label: const Text(
-                      'Check with me every:',
+              children: [
+                const Text('אני בסדר', textScaleFactor: 3),
+                Column(
+                  children: [
+                    DropdownMenu(
+                      label: const Text(
+                        'תבדוק איתי כל:',
+                      ),
+                      onSelected: (value) => {
+                        // createNotification(value!)
+                      },
+                      dropdownMenuEntries: const [
+                        DropdownMenuEntry(
+                          label: 'שעה',
+                          value: 600,
+                        ),
+                        DropdownMenuEntry(
+                          label: '6 שעות',
+                          value: 600 * 6,
+                        ),
+                        DropdownMenuEntry(
+                          label: '8 שעות',
+                          value: 600 * 8,
+                        ),
+                        DropdownMenuEntry(
+                          label: '24 שעות',
+                          value: 600 * 24,
+                        ),
+                      ],
                     ),
-                    onSelected: (value) => {
-                      // createNotification(value!)
-                    },
-                    dropdownMenuEntries: const [
-                      DropdownMenuEntry(
-                        label: 'Hour',
-                        value: 600,
-                      ),
-                      DropdownMenuEntry(
-                        label: '6 Hours',
-                        value: 600 * 6,
-                      ),
-                      DropdownMenuEntry(
-                        label: '8 Hours',
-                        value: 600 * 8,
-                      ),
-                      DropdownMenuEntry(
-                        label: '24 Hours',
-                        value: 600 * 24,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-                  const FollowersControl(),
-                ],
-              ),
-              const Divider(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ImSafeButton(
-                    stopListen: widget.stopListen,
-                  ),
-                  TextButton.icon(
-                    icon: const Icon(Icons.exit_to_app),
-                    onPressed: supabase.auth.signOut,
-                    label: const Text('Sign Out'),
-                  ),
-                ],
-              ),
-            ],
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const FollowersControl(),
+                  ],
+                ),
+
+                // const Divider(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ImSafeButton(
+                      stopListen: widget.stopListen,
+                    ),
+                    TextButton.icon(
+                      icon: const Icon(Icons.exit_to_app),
+                      onPressed: supabase.auth.signOut,
+                      label: const Text('התנתקות'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -155,7 +160,7 @@ class FollowersControl extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownMenu(
       label: const Text(
-        'Share my status with:',
+        'שתף את הסטטוס שלי עם:',
       ),
       onSelected: (value) => {
         showModalBottomSheet(
@@ -169,10 +174,10 @@ class FollowersControl extends StatelessWidget {
           },
         )
       },
-      enableSearch: false,
+      // enableSearch: false,
       dropdownMenuEntries: const [
         DropdownMenuEntry(
-          label: 'List People',
+          label: 'בחירה מרשימה',
           value: 1,
         ),
         // DropdownMenuEntry(
@@ -180,7 +185,7 @@ class FollowersControl extends StatelessWidget {
         //   value: 1,
         // ),
         DropdownMenuEntry(
-          label: 'All My Contacts',
+          label: 'כל אנשי הקשר שלי',
           value: 1,
         ),
       ],
@@ -274,55 +279,61 @@ class _ContactsListState extends State<ContactsList> {
       return const Center(child: Text('Permission denied'));
     }
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TextField(
-            onChanged: (value) {
-              filterSearchResults(value);
-            },
-            decoration: const InputDecoration(
-              labelText: "Search",
-              hintText: "Search",
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(25.0)),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              onChanged: (value) {
+                filterSearchResults(value);
+              },
+              decoration: const InputDecoration(
+                labelText: "חיפוש",
+                hintText: "חיפוש",
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                ),
               ),
             ),
           ),
-        ),
-        Expanded(
-          child: ListView.builder(
-              itemCount: _filteredContacts.length,
-              itemBuilder: (context, i) {
-                return CheckboxListTile(
-                  onChanged: (value) {
-                    if (_filteredContacts[i]['contact'].phones.isNotEmpty) {
-                      supabase
-                          .from('follows')
-                          .upsert({
-                            'user_id': supabase.auth.currentUser?.id,
-                            'id': _filteredContacts[i]['id'],
-                            'allowed_number': fixPhoneNumber(
-                                _filteredContacts[i]['contact']
-                                    .phones
-                                    .first
-                                    .number),
-                            'is_allowed': value
-                          })
-                          .then((value) => _fetchContacts())
-                          .catchError((error) {
-                            print(error);
-                          });
-                    }
-                  },
-                  value: _filteredContacts[i]['enabled'] ?? false,
-                  title: Text(_filteredContacts[i]['contact'].displayName),
-                );
-              }),
-        ),
-      ],
+          Expanded(
+            child: ListView.builder(
+                itemCount: _filteredContacts.length,
+                itemBuilder: (context, i) {
+                  return CheckboxListTile(
+                    onChanged: (value) {
+                      var args = {
+                        'user_id': supabase.auth.currentUser?.id,
+                        'allowed_number': fixPhoneNumber(_filteredContacts[i]
+                                ['contact']
+                            .phones
+                            .first
+                            .number),
+                        'is_allowed': value
+                      };
+                      if (_filteredContacts[i]['id'] != null) {
+                        args['id'] = _filteredContacts[i]['id'];
+                      }
+                      if (_filteredContacts[i]['contact'].phones.isNotEmpty) {
+                        supabase
+                            .from('follows')
+                            .upsert(args)
+                            .then((value) => _fetchContacts())
+                            .catchError((error) {
+                          print(error);
+                        });
+                      }
+                    },
+                    value: _filteredContacts[i]['enabled'] ?? false,
+                    title: Text(_filteredContacts[i]['contact'].displayName),
+                  );
+                }),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -333,8 +344,8 @@ class ContactPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(title: Text(contact.displayName)),
-      body: Column(children: [
+          // appBar: AppBar(title: Text(contact.displayName)),
+          body: Column(children: [
         Text('First name: ${contact.name.first}'),
         Text('Last name: ${contact.name.last}'),
         Text(

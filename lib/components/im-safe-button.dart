@@ -22,16 +22,11 @@ class _ImSafeButton extends State<ImSafeButton> {
   StreamSubscription<LocationData>? _locationSubscription;
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
       icon: const Icon(Icons.shield_outlined),
       onPressed: widget.stopListen,
-      label: const Text("I'm Fine"),
+      label: const Text("אני בסדר"),
     );
   }
 }
