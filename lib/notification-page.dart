@@ -80,18 +80,18 @@ class _MyNotificationPageState extends State<MyNotificationPage> {
         _isAuthenticating = true;
         _authorized = 'Authenticating';
       });
-      bool _serviceEnabled = await location.serviceEnabled();
-      if (!_serviceEnabled) {
-        _serviceEnabled = await location.requestService();
-        if (!_serviceEnabled) {
+      bool serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) {
           return;
         }
       }
 
-      PermissionStatus _permissionGranted = await location.hasPermission();
-      if (_permissionGranted == PermissionStatus.denied) {
-        _permissionGranted = await location.requestPermission();
-        if (_permissionGranted != PermissionStatus.granted) {
+      PermissionStatus permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) {
           return;
         }
       }
@@ -109,7 +109,7 @@ class _MyNotificationPageState extends State<MyNotificationPage> {
       print(e);
       setState(() {
         _isAuthenticating = false;
-        _authorized = 'Error - ${e}';
+        _authorized = 'Error - $e';
       });
       return;
     }

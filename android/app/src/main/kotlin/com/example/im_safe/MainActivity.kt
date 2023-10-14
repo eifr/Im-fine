@@ -1,4 +1,4 @@
-package com.example.im_safe
+package com.eifr.im_fine
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

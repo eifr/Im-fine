@@ -6,6 +6,7 @@ import 'package:im_safe/components/im-safe-button.dart';
 import 'package:im_safe/main.dart';
 import 'package:im_safe/pages/login.dart';
 import 'package:location/location.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -35,6 +36,13 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         if (data.session != null) {
           createNotification(60);
+          OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+          OneSignal.initialize("341c3a51-a9c3-49e2-b467-41d319bfc720");
+          OneSignal.login(supabase.auth.currentUser!.id);
+
+// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+          OneSignal.Notifications.requestPermission(true);
+
           _session = data.session;
         }
       });
