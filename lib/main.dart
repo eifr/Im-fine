@@ -116,7 +116,6 @@ void main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbmh6YWNtbG95bHdtcnhjc29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTcwMDMxMzYsImV4cCI6MjAxMjU3OTEzNn0.Rko777OCxSIUrhq3rJ0Xsk9Th24jD24XDW7pXZlYuAQ',
   );
-
   // await AwesomeNotifications().initialize(
   //   // set the icon to null if you want to use the default app icon
   //   null,
