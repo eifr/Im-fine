@@ -36,7 +36,7 @@ Future<void> createNotification(int time) async {
     importance: Importance.max,
     priority: Priority.high,
     ticker: 'ticker',
-    icon: '@mipmap/ic_launcher',
+    // icon: '@mipmap/ic_launcher',
   );
   const darwinNotificationDetails = DarwinNotificationDetails();
   const NotificationDetails notificationDetails = NotificationDetails(
@@ -142,7 +142,7 @@ void main() async {
   //     FlutterLocalNotificationsPlugin();
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('ic_stat_onesignal_default');
   const DarwinInitializationSettings initializationSettingsDarwin =
       DarwinInitializationSettings();
   const LinuxInitializationSettings initializationSettingsLinux =

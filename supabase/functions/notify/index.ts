@@ -16,12 +16,20 @@ const onesignal = new DefaultApi(configuration);
 
 Deno.serve(async (req) => {
   try {
-    const { record } = await req.json();
+    const {
+      record: { im_fine, user_id },
+    } = await req.json();
+
+    if (im_fine == true) {
+      return new Response(JSON.stringify({ status: "all ok" }), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     // Build OneSignal notification object
     const notification = new Notification();
     notification.app_id = _OnesignalAppId_;
-    notification.include_external_user_ids = [record.user_id];
+    notification.include_external_user_ids = [user_id];
     // notification.url =
     notification.contents = {
       en: `יעקב לא ענה באפליקציה! תבדוק אם הוא בסדר`,
