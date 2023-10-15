@@ -27,6 +27,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final Location location = Location();
   Session? _session;
+  int currentPageIndex = 0;
 
   late final StreamSubscription<AuthState> _authStateSubscription;
 
@@ -40,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
           OneSignal.initialize("341c3a51-a9c3-49e2-b467-41d319bfc720");
           OneSignal.login(supabase.auth.currentUser!.id);
 
-// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+          // The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
           OneSignal.Notifications.requestPermission(true);
 
           _session = data.session;
@@ -68,6 +69,31 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_session != null) {
       return SafeArea(
         child: Scaffold(
+          bottomNavigationBar: NavigationBar(
+            onDestinationSelected: (int index) {
+              setState(() {
+                currentPageIndex = index;
+              });
+            },
+            selectedIndex: currentPageIndex,
+            destinations: const [
+              NavigationDestination(
+                selectedIcon: Icon(
+                  Icons.people_alt,
+                ),
+                icon: Icon(
+                  Icons.people_alt_outlined,
+                ),
+                label: 'כולם',
+              ),
+              NavigationDestination(
+                icon: Icon(
+                  Icons.self_improvement,
+                ),
+                label: 'אני',
+              )
+            ],
+          ),
           // appBar: AppBar(
           //   // TRY THIS: Try changing the color here to a specific color (to
           //   // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
@@ -78,84 +104,121 @@ class _MyHomePageState extends State<MyHomePage> {
           //   title: Text(widget.title),
           //   centerTitle: true,
           // ),
-          body: Center(
-            // Center is a layout widget. It takes a single child and positions it
-            // in the middle of the parent.
-            child: Column(
-              // Column is also a layout widget. It takes a list of children and
-              // arranges them vertically. By default, it sizes itself to fit its
-              // children horizontally, and tries to be as tall as its parent.
-              //
-              // Column has various properties to control how it sizes itself and
-              // how it positions its children. Here we use mainAxisAlignment to
-              // center the children vertically; the main axis here is the vertical
-              // axis because Columns are vertical (the cross axis would be
-              // horizontal).
-              //
-              // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-              // action in the IDE, or press "p" in the console), to see the
-              // wireframe for each widget.
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-
-              children: [
-                const Text('אני בסדר', textScaleFactor: 3),
-                Column(
-                  children: [
-                    DropdownMenu(
-                      label: const Text(
-                        'תבדוק איתי כל:',
-                      ),
-                      onSelected: (value) => {
-                        // createNotification(value!)
-                      },
-                      dropdownMenuEntries: const [
-                        DropdownMenuEntry(
-                          label: 'שעה',
-                          value: 600,
-                        ),
-                        DropdownMenuEntry(
-                          label: '6 שעות',
-                          value: 600 * 6,
-                        ),
-                        DropdownMenuEntry(
-                          label: '8 שעות',
-                          value: 600 * 8,
-                        ),
-                        DropdownMenuEntry(
-                          label: '24 שעות',
-                          value: 600 * 24,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const FollowersControl(),
-                  ],
-                ),
-
-                // const Divider(height: 32),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ImSafeButton(
-                      stopListen: widget.stopListen,
-                    ),
-                    TextButton.icon(
-                      icon: const Icon(Icons.exit_to_app),
-                      onPressed: supabase.auth.signOut,
-                      label: const Text('התנתקות'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          body: [
+            const Placeholder(),
+            SelfPage(widget: widget)
+          ][currentPageIndex],
         ),
       );
     } else {
       return const LoginPage();
     }
+  }
+}
+
+class SelfPage extends StatelessWidget {
+  const SelfPage({
+    super.key,
+    required this.widget,
+  });
+
+  final MyHomePage widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      // Center is a layout widget. It takes a single child and positions it
+      // in the middle of the parent.
+      child: Column(
+        // Column is also a layout widget. It takes a list of children and
+        // arranges them vertically. By default, it sizes itself to fit its
+        // children horizontally, and tries to be as tall as its parent.
+        //
+        // Column has various properties to control how it sizes itself and
+        // how it positions its children. Here we use mainAxisAlignment to
+        // center the children vertically; the main axis here is the vertical
+        // axis because Columns are vertical (the cross axis would be
+        // horizontal).
+        //
+        // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+        // action in the IDE, or press "p" in the console), to see the
+        // wireframe for each widget.
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+        children: [
+          const Text('אני בסדר', textScaleFactor: 3),
+
+          Icon(
+            Icons.shield_outlined,
+            size: 150,
+            color: Theme.of(context).primaryColor,
+          ),
+          Column(
+            children: [
+              DropdownMenu(
+                label: const Text(
+                  'תבדוק איתי כל:',
+                ),
+                onSelected: (value) => {
+                  // createNotification(value!)
+                },
+                dropdownMenuEntries: const [
+                  DropdownMenuEntry(
+                    label: 'שעה',
+                    value: 600,
+                  ),
+                  DropdownMenuEntry(
+                    label: '6 שעות',
+                    value: 600 * 6,
+                  ),
+                  DropdownMenuEntry(
+                    label: '8 שעות',
+                    value: 600 * 8,
+                  ),
+                  DropdownMenuEntry(
+                    label: '24 שעות',
+                    value: 600 * 24,
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              // const FollowersControl(),
+            ],
+          ),
+
+          // const Divider(height: 32),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ImSafeButton(
+                stopListen: widget.stopListen,
+              ),
+              ElevatedButton.icon(
+                onPressed: () => showModalBottomSheet(
+                  isScrollControlled: true,
+                  enableDrag: true,
+                  showDragHandle: true,
+                  context: context,
+                  useSafeArea: true,
+                  builder: (context) {
+                    return const ContactsList();
+                  },
+                ),
+                label: const Text('אנשי קשר'),
+                icon: const Icon(Icons.check_box_outlined),
+              ),
+              TextButton.icon(
+                icon: const Icon(Icons.exit_to_app),
+                onPressed: supabase.auth.signOut,
+                label: const Text('התנתקות'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
