@@ -116,31 +116,6 @@ void main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbmh6YWNtbG95bHdtcnhjc29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTcwMDMxMzYsImV4cCI6MjAxMjU3OTEzNn0.Rko777OCxSIUrhq3rJ0Xsk9Th24jD24XDW7pXZlYuAQ',
   );
-  // await AwesomeNotifications().initialize(
-  //   // set the icon to null if you want to use the default app icon
-  //   null,
-  //   [
-  //     NotificationChannel(
-  //       channelGroupKey: 'basic_channel_group',
-  //       channelKey: 'basic_channel',
-  //       channelName: 'Basic notifications',
-  //       channelDescription: 'Notification channel for basic tests',
-  //       defaultColor: const Color(0xFF9D50DD),
-  //       ledColor: Colors.white,
-  //     ),
-  //   ],
-  //   // Channel groups are only visual and are not required
-  //   channelGroups: [
-  //     NotificationChannelGroup(
-  //       channelGroupKey: 'basic_channel_group',
-  //       channelGroupName: 'Basic group',
-  //     )
-  //   ],
-  //   debug: true,
-  // );
-  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  //     FlutterLocalNotificationsPlugin();
-// initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('ic_stat_onesignal_default');
   const DarwinInitializationSettings initializationSettingsDarwin =
