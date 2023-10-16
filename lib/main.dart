@@ -59,20 +59,6 @@ Future<void> enableInBackground(Location location) async {
   }
 }
 
-Future<void> getLocationPermissions(Location location) async {
-  final permissionGrantedResult = await location.hasPermission();
-  if (permissionGrantedResult != PermissionStatus.granted) {
-    final permissionRequestedResult = await location.requestPermission();
-    if (permissionRequestedResult != PermissionStatus.granted) {
-      await getLocationPermissions(location);
-    } else {
-      await enableInBackground(location);
-    }
-  } else {
-    await enableInBackground(location);
-  }
-}
-
 // class NotificationController {
 //   /// Use this method to detect when a new notification or a schedule is created
 //   @pragma("vm:entry-point")
@@ -195,7 +181,7 @@ class _MyAppState extends State<MyApp> {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
-    getLocationPermissions(location);
+    // getLocationPermissions(location);
     super.initState();
   }
 
@@ -241,7 +227,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future stopListen() async {
-    // await location.
     await _locationSubscription?.cancel();
     await location.enableBackgroundMode(enable: false);
     setState(() {
@@ -249,6 +234,20 @@ class _MyAppState extends State<MyApp> {
     });
 
     print('Location sub stopped');
+  }
+
+  Future imSafe() async {
+    try {
+      await stopListen();
+      await supabase.from('user_status').insert([
+        {
+          'is_fine': true,
+          'user_id': supabase.auth.currentUser?.id,
+        },
+      ]);
+    } catch (e) {
+      print(e);
+    }
   }
 
   // This widget is the root of your application.
@@ -264,7 +263,7 @@ class _MyAppState extends State<MyApp> {
             return MaterialPageRoute(
               builder: (context) => MyHomePage(
                 title: MyApp.name,
-                stopListen: stopListen,
+                stopListen: imSafe,
               ),
             );
 
@@ -302,14 +301,26 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blue,
         ),
+        // brightness: Brightness.dark,
+
         textTheme: GoogleFonts.rubikTextTheme(),
         useMaterial3: true,
       ),
+      // darkTheme: ThemeData(
+      //   // brightness: Brightness.dark,
+      //   useMaterial3: true,
+      //   // colorScheme: ColorScheme.fromSeed(
+      //   //   seedColor: Colors.blue,
+
+      //   //   brightness: Brightness.dark,
+      //   // ),
+      //   textTheme: GoogleFonts.rubikTextTheme(),
+      // ),
       home: Directionality(
         textDirection: TextDirection.rtl,
         child: MyHomePage(
           title: "אני בסדר",
-          stopListen: stopListen,
+          stopListen: imSafe,
         ),
       ),
     );
