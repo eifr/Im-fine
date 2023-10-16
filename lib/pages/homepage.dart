@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:im_safe/components/im-safe-button.dart';
 import 'package:im_safe/main.dart';
+import 'package:im_safe/pages/follow-status.dart';
 import 'package:im_safe/pages/login.dart';
+import 'package:im_safe/pages/permissions.dart';
 import 'package:location/location.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -43,9 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
           // The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
           OneSignal.Notifications.requestPermission(true);
-
-          _session = data.session;
         }
+        _session = data.session;
       });
     });
     super.initState();
@@ -68,46 +68,48 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (_session != null) {
       return SafeArea(
-        child: Scaffold(
-          bottomNavigationBar: NavigationBar(
-            onDestinationSelected: (int index) {
-              setState(() {
-                currentPageIndex = index;
-              });
-            },
-            selectedIndex: currentPageIndex,
-            destinations: const [
-              NavigationDestination(
-                selectedIcon: Icon(
-                  Icons.people_alt,
+        child: Permissions(
+          child: Scaffold(
+            bottomNavigationBar: NavigationBar(
+              onDestinationSelected: (int index) {
+                setState(() {
+                  currentPageIndex = index;
+                });
+              },
+              selectedIndex: currentPageIndex,
+              destinations: const [
+                NavigationDestination(
+                  selectedIcon: Icon(
+                    Icons.people_alt,
+                  ),
+                  icon: Icon(
+                    Icons.people_alt_outlined,
+                  ),
+                  label: 'כולם',
                 ),
-                icon: Icon(
-                  Icons.people_alt_outlined,
-                ),
-                label: 'כולם',
-              ),
-              NavigationDestination(
-                icon: Icon(
-                  Icons.self_improvement,
-                ),
-                label: 'אני',
-              )
-            ],
+                NavigationDestination(
+                  icon: Icon(
+                    Icons.self_improvement,
+                  ),
+                  label: 'אני',
+                )
+              ],
+            ),
+            // appBar: AppBar(
+            //   // TRY THIS: Try changing the color here to a specific color (to
+            //   // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+            //   // change color while the other colors stay the same.
+            //   // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            //   // Here we take the value from the MyHomePage object that was created by
+            //   // the App.build method, and use it to set our appbar title.
+            //   title: Text(widget.title),
+            //   centerTitle: true,
+            // ),
+            body: [
+              const FollowStatus(),
+              SelfPage(widget: widget)
+            ][currentPageIndex],
           ),
-          // appBar: AppBar(
-          //   // TRY THIS: Try changing the color here to a specific color (to
-          //   // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-          //   // change color while the other colors stay the same.
-          //   // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          //   // Here we take the value from the MyHomePage object that was created by
-          //   // the App.build method, and use it to set our appbar title.
-          //   title: Text(widget.title),
-          //   centerTitle: true,
-          // ),
-          body: [
-            const Placeholder(),
-            SelfPage(widget: widget)
-          ][currentPageIndex],
         ),
       );
     } else {
@@ -146,12 +148,17 @@ class SelfPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
 
         children: [
-          const Text('אני בסדר', textScaleFactor: 3),
-
-          Icon(
-            Icons.shield_outlined,
-            size: 150,
-            color: Theme.of(context).primaryColor,
+          const Column(
+            children: [
+              Text('הכל בסדר?', textScaleFactor: 3),
+              Text('האפליקציה עוקבת אחרי המיקום'),
+              Text('לחצו על המגן בכדי לאמת שאתם בסדר'),
+            ],
+          ),
+          IconButton.filled(
+            iconSize: 150,
+            onPressed: widget.stopListen,
+            icon: const Icon(Icons.shield_outlined),
           ),
           Column(
             children: [
@@ -187,14 +194,9 @@ class SelfPage extends StatelessWidget {
               // const FollowersControl(),
             ],
           ),
-
-          // const Divider(height: 32),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              ImSafeButton(
-                stopListen: widget.stopListen,
-              ),
               ElevatedButton.icon(
                 onPressed: () => showModalBottomSheet(
                   isScrollControlled: true,
@@ -245,16 +247,11 @@ class FollowersControl extends StatelessWidget {
           },
         )
       },
-      // enableSearch: false,
       dropdownMenuEntries: const [
         DropdownMenuEntry(
           label: 'בחירה מרשימה',
           value: 1,
         ),
-        // DropdownMenuEntry(
-        //   label: 'Public',
-        //   value: 1,
-        // ),
         DropdownMenuEntry(
           label: 'כל אנשי הקשר שלי',
           value: 1,
@@ -378,11 +375,9 @@ class _ContactsListState extends State<ContactsList> {
                     onChanged: (value) {
                       var args = {
                         'user_id': supabase.auth.currentUser?.id,
-                        'allowed_number': fixPhoneNumber(_filteredContacts[i]
-                                ['contact']
-                            .phones
-                            .first
-                            .number),
+                        'allowed_number': fixPhoneNumber(
+                          _filteredContacts[i]['contact'].phones.first.number,
+                        ),
                         'is_allowed': value
                       };
                       if (_filteredContacts[i]['id'] != null) {
@@ -393,9 +388,7 @@ class _ContactsListState extends State<ContactsList> {
                             .from('follows')
                             .upsert(args)
                             .then((value) => _fetchContacts())
-                            .catchError((error) {
-                          print(error);
-                        });
+                            .catchError(print);
                       }
                     },
                     value: _filteredContacts[i]['enabled'] ?? false,
@@ -415,19 +408,25 @@ class ContactPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-          // appBar: AppBar(title: Text(contact.displayName)),
-          body: Column(children: [
-        Text('First name: ${contact.name.first}'),
-        Text('Last name: ${contact.name.last}'),
-        Text(
-            'Phone number: ${contact.phones.isNotEmpty ? contact.phones.first.number : '(none)'}'),
-        Text(
-            'Email address: ${contact.emails.isNotEmpty ? contact.emails.first.address : '(none)'}'),
-      ]));
+        body: Column(children: [
+          Text('First name: ${contact.name.first}'),
+          Text('Last name: ${contact.name.last}'),
+          Text(
+              'Phone number: ${contact.phones.isNotEmpty ? contact.phones.first.number : '(none)'}'),
+          Text(
+              'Email address: ${contact.emails.isNotEmpty ? contact.emails.first.address : '(none)'}'),
+        ]),
+      );
 }
 
 String fixPhoneNumber(String phoneNumber) {
-  return phoneNumber.startsWith('0')
-      ? '972${phoneNumber.substring(1)}'
-      : phoneNumber;
+  final cleanPhoneNumber = phoneNumber.replaceAll('-', '');
+  switch (cleanPhoneNumber[0]) {
+    case '0':
+      return '972${cleanPhoneNumber.substring(1)}';
+    case '+':
+      return cleanPhoneNumber.substring(1);
+  }
+
+  return cleanPhoneNumber;
 }
