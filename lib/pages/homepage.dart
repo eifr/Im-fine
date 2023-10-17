@@ -41,7 +41,6 @@ class _MyHomePageState extends State<MyHomePage> {
           OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
           OneSignal.initialize("341c3a51-a9c3-49e2-b467-41d319bfc720");
           OneSignal.login(supabase.auth.currentUser!.id);
-
           // The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
           OneSignal.Notifications.requestPermission(true);
         }
@@ -213,7 +212,10 @@ class SelfPage extends StatelessWidget {
               ),
               TextButton.icon(
                 icon: const Icon(Icons.exit_to_app),
-                onPressed: supabase.auth.signOut,
+                onPressed: () {
+                  OneSignal.logout();
+                  supabase.auth.signOut();
+                },
                 label: const Text('התנתקות'),
               ),
             ],

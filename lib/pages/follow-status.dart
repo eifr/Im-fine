@@ -44,11 +44,22 @@ class _FollowStatusState extends State<FollowStatus> {
                     child: ListView.builder(
                       itemCount: snapshot.data["contacts"].length,
                       itemBuilder: (context, index) => ListTile(
-                        leading: CircleAvatar(
-                          child: Text(snapshot
-                              .data["contacts"][index]["contact"]
-                              .displayName[0]),
-                        ),
+                        leading:
+                            snapshot.data["contacts"][index]["contact"].photo !=
+                                    null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(18),
+                                    child: Image.memory(
+                                      snapshot
+                                          .data["contacts"][index]["contact"]
+                                          .photo,
+                                    ),
+                                  )
+                                : CircleAvatar(
+                                    child: Text(snapshot
+                                        .data["contacts"][index]["contact"]
+                                        .displayName[0]),
+                                  ),
                         title: Text(
                           snapshot
                               .data["contacts"][index]["contact"].displayName,
@@ -73,25 +84,27 @@ class _FollowStatusState extends State<FollowStatus> {
                       child: Column(
                         children: [
                           const Text('לא באנשי הקשר שלי'),
-                          ListView.builder(
-                            itemCount: snapshot.data["nonContacts"].length,
-                            itemBuilder: (context, index) => ListTile(
-                              leading:
-                                  const CircleAvatar(child: Icon(Icons.person)),
-                              title: Text(
-                                '${snapshot.data["nonContacts"][index]["status"]["phone"]}+',
-                              ),
-                              subtitle: Text(
-                                'הכל בסדר! עודכן ב-${DateFormat('H:m (dd/MM/yy)').format(
-                                  DateTime.parse(
-                                    snapshot.data["nonContacts"][index]
-                                        ["status"]["created_at"],
-                                  ),
-                                )}',
-                              ),
-                              trailing: Icon(
-                                Icons.shield_outlined,
-                                color: Theme.of(context).primaryColor,
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: snapshot.data["nonContacts"].length,
+                              itemBuilder: (context, index) => ListTile(
+                                leading: const CircleAvatar(
+                                    child: Icon(Icons.person)),
+                                title: Text(
+                                  '${snapshot.data["nonContacts"][index]["status"]["phone"]}+',
+                                ),
+                                subtitle: Text(
+                                  'הכל בסדר! עודכן ב-${DateFormat('H:m (dd/MM/yy)').format(
+                                    DateTime.parse(
+                                      snapshot.data["nonContacts"][index]
+                                          ["status"]["created_at"],
+                                    ),
+                                  )}',
+                                ),
+                                trailing: Icon(
+                                  Icons.shield_outlined,
+                                  color: Theme.of(context).primaryColor,
+                                ),
                               ),
                             ),
                           ),
