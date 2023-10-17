@@ -65,11 +65,11 @@ class _FollowStatusState extends State<FollowStatus> {
                               .data["contacts"][index]["contact"].displayName,
                         ),
                         subtitle: Text(
-                          'הכל בסדר! עודכן ב-${DateFormat('H:m (dd/MM/yy)').format(
+                          'הכל בסדר! עודכן ב-${DateFormat('HH:mm (dd/MM/yy)').format(
                             DateTime.parse(
                               snapshot.data["contacts"][index]["status"]
                                   ["created_at"],
-                            ),
+                            ).toLocal(),
                           )}',
                         ),
                         trailing: Icon(
