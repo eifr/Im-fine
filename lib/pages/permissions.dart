@@ -12,58 +12,96 @@ class Permissions extends StatefulWidget {
 
 class _PermissionsState extends State<Permissions> {
   final location = Location();
+  bool _contactPermission = false;
+  bool _backgroundPermission = false;
+  bool _locationPermission = false;
+
+  @override
+  void initState() {
+    _checkPermissions();
+    super.initState();
+  }
+
+  Future _checkPermissions() async {
+    final contactPermission = await FlutterContacts.requestPermission(
+      readonly: true,
+    );
+    final locationPermission = await location.hasPermission();
+    bool backgroundPermission;
+
+    if (locationPermission == PermissionStatus.granted) {
+      backgroundPermission = await location.enableBackgroundMode();
+    } else {
+      backgroundPermission = false;
+    }
+    // final backgroundPermission = await location.isBackgroundModeEnabled();
+
+    setState(() {
+      _contactPermission = contactPermission;
+      _backgroundPermission = backgroundPermission;
+      _locationPermission = locationPermission == PermissionStatus.granted;
+    });
+  }
+
+  _requestContactPermission() async {
+    final contactPermissions =
+        await FlutterContacts.requestPermission(readonly: true);
+
+    setState(() {
+      _contactPermission = contactPermissions;
+    });
+  }
+
+  _requestLocationPermission() async {
+    final locationPermissions = await location.requestPermission();
+
+    setState(() {
+      _locationPermission = locationPermissions == PermissionStatus.granted;
+    });
+  }
+
+  _requestBackgroundPermission() async {
+    final backgroundPermissions = await location.enableBackgroundMode();
+    if (backgroundPermissions) {
+      await location.enableBackgroundMode(enable: false);
+    }
+    setState(() {
+      _backgroundPermission = backgroundPermissions;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: checkPermissions(location),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (snapshot.data["locationPermission"] != true ||
-            snapshot.data["backgroundPermission"] != true ||
-            snapshot.data["contactPermission"] != true) {
-          return GetPermissions(
-            backgroundPermission: snapshot.data["backgroundPermission"],
-            contactPermission: snapshot.data["contactPermission"],
-            locationPermission: snapshot.data["locationPermission"],
-            location: location,
-          );
-        }
+    if (!_backgroundPermission || !_contactPermission || !_locationPermission) {
+      return GetPermissions(
+        backgroundPermission: _backgroundPermission,
+        contactPermission: _contactPermission,
+        locationPermission: _locationPermission,
+        requestBackgroundPermission: _requestBackgroundPermission,
+        requestLocationPermission: _requestLocationPermission,
+        requestContactPermission: _requestContactPermission,
+      );
+    }
 
-        return widget;
-      },
-    );
+    return widget.child;
   }
-}
-
-Future checkPermissions(Location location) async {
-  final contactPermission = await FlutterContacts.requestPermission(
-    readonly: true,
-  );
-  final locationPermission = await location.hasPermission();
-  final backgroundPermission = await location.enableBackgroundMode();
-
-  return {
-    "locationPermission": locationPermission == PermissionStatus.granted,
-    "backgroundPermission": backgroundPermission,
-    "contactPermission": contactPermission
-  };
 }
 
 class GetPermissions extends StatelessWidget {
   final bool locationPermission;
   final bool backgroundPermission;
   final bool contactPermission;
-  final Location location;
+  final Function requestLocationPermission;
+  final Function requestBackgroundPermission;
+  final Function requestContactPermission;
   const GetPermissions({
     super.key,
     required this.backgroundPermission,
     required this.contactPermission,
     required this.locationPermission,
-    required this.location,
+    required this.requestLocationPermission,
+    required this.requestBackgroundPermission,
+    required this.requestContactPermission,
   });
 
   @override
@@ -80,21 +118,38 @@ class GetPermissions extends StatelessWidget {
           if (!contactPermission)
             ElevatedButton.icon(
               icon: const Icon(Icons.contact_page_outlined),
-              onPressed: () =>
-                  FlutterContacts.requestPermission(readonly: true),
+              onPressed: () {
+                requestContactPermission();
+              },
               label: const Text('הרשאה לאנשי קשר'),
             ),
           if (!locationPermission)
-            ElevatedButton.icon(
-              icon: const Icon(Icons.pin_drop_outlined),
-              onPressed: () => location.requestPermission(),
-              label: Text('הרשאה למיקום'),
+            Column(
+              children: [
+                const Text(
+                    'במקרים שלא בסדר, נוכל לדווח את המיקום לאנשי קשר שבחרתם'),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.pin_drop_outlined),
+                  onPressed: () {
+                    requestLocationPermission();
+                  },
+                  label: Text('הרשאה למיקום'),
+                ),
+              ],
             ),
           if (!backgroundPermission)
-            ElevatedButton.icon(
-              icon: const Icon(Icons.access_time),
-              onPressed: () => location.enableBackgroundMode(),
-              label: const Text('הרשאה למיקום ברקע'),
+            Column(
+              children: [
+                const Text(
+                    'נוכל לשתף את המיקום גם בלי שתצטרכו לפתוח את האפליקציה'),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.access_time),
+                  onPressed: () {
+                    requestBackgroundPermission();
+                  },
+                  label: const Text('הרשאה למיקום ברקע'),
+                ),
+              ],
             ),
         ],
       ),
