@@ -127,13 +127,15 @@ class GetPermissions extends StatelessWidget {
             Column(
               children: [
                 const Text(
-                    'במקרים שלא בסדר, נוכל לדווח את המיקום לאנשי קשר שבחרתם'),
+                  'שימוש במיקום נועד למקרים שלא בסדר, נוכל לדווח את המיקום לאנשי קשר שבחרתם',
+                  textAlign: TextAlign.center,
+                ),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.pin_drop_outlined),
                   onPressed: () {
                     requestLocationPermission();
                   },
-                  label: Text('הרשאה למיקום'),
+                  label: const Text('הרשאה למיקום'),
                 ),
               ],
             ),
@@ -141,7 +143,9 @@ class GetPermissions extends StatelessWidget {
             Column(
               children: [
                 const Text(
-                    'נוכל לשתף את המיקום גם בלי שתצטרכו לפתוח את האפליקציה'),
+                  'מיקום בכל זמן נועד שנוכל לשתף את המיקום גם בלי שתצטרכו לפתוח את האפליקציה',
+                  textAlign: TextAlign.center,
+                ),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.access_time),
                   onPressed: () {
