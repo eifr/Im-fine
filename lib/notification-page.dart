@@ -80,21 +80,21 @@ class _MyNotificationPageState extends State<MyNotificationPage> {
         _isAuthenticating = true;
         _authorized = 'Authenticating';
       });
-      bool serviceEnabled = await location.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await location.requestService();
-        if (!serviceEnabled) {
-          return;
-        }
-      }
+      // bool serviceEnabled = await location.serviceEnabled();
+      // if (!serviceEnabled) {
+      //   serviceEnabled = await location.requestService();
+      //   if (!serviceEnabled) {
+      //     return;
+      //   }
+      // }
 
-      PermissionStatus permissionGranted = await location.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
-        permissionGranted = await location.requestPermission();
-        if (permissionGranted != PermissionStatus.granted) {
-          return;
-        }
-      }
+      // PermissionStatus permissionGranted = await location.hasPermission();
+      // if (permissionGranted == PermissionStatus.denied) {
+      //   permissionGranted = await location.requestPermission();
+      //   if (permissionGranted != PermissionStatus.granted) {
+      //     return;
+      //   }
+      // }
 
       authenticated = await auth.authenticate(
         localizedReason: 'Let OS determine authentication method',
