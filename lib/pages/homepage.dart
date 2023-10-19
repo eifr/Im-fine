@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _authStateSubscription = supabase.auth.onAuthStateChange.listen((data) {
       setState(() {
         if (data.session != null) {
-          createNotification(60);
+          createNotification(time: 60);
           OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
           OneSignal.initialize("341c3a51-a9c3-49e2-b467-41d319bfc720");
           OneSignal.login(supabase.auth.currentUser!.id);
@@ -166,7 +166,7 @@ class SelfPage extends StatelessWidget {
                   'תבדוק איתי כל:',
                 ),
                 onSelected: (value) => {
-                  // createNotification(value!)
+                  createNotification(time: value!),
                 },
                 dropdownMenuEntries: const [
                   DropdownMenuEntry(
@@ -190,7 +190,6 @@ class SelfPage extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              // const FollowersControl(),
             ],
           ),
           Row(
