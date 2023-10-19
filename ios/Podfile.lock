@@ -1,11 +1,13 @@
 PODS:
   - app_links (0.0.1):
     - Flutter
+  - awesome_notifications (0.8.1):
+    - Flutter
+    - IosAwnCore (~> 0.8.0)
   - Flutter (1.0.0)
   - flutter_contacts (0.0.1):
     - Flutter
-  - flutter_local_notifications (0.0.1):
-    - Flutter
+  - IosAwnCore (0.8.0)
   - local_auth_ios (0.0.1):
     - Flutter
   - location (0.0.1):
@@ -69,9 +71,9 @@ PODS:
 
 DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
+  - awesome_notifications (from `.symlinks/plugins/awesome_notifications/ios`)
   - Flutter (from `Flutter`)
   - flutter_contacts (from `.symlinks/plugins/flutter_contacts/ios`)
-  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - local_auth_ios (from `.symlinks/plugins/local_auth_ios/ios`)
   - location (from `.symlinks/plugins/location/ios`)
   - onesignal_flutter (from `.symlinks/plugins/onesignal_flutter/ios`)
@@ -83,17 +85,18 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - IosAwnCore
     - OneSignalXCFramework
 
 EXTERNAL SOURCES:
   app_links:
     :path: ".symlinks/plugins/app_links/ios"
+  awesome_notifications:
+    :path: ".symlinks/plugins/awesome_notifications/ios"
   Flutter:
     :path: Flutter
   flutter_contacts:
     :path: ".symlinks/plugins/flutter_contacts/ios"
-  flutter_local_notifications:
-    :path: ".symlinks/plugins/flutter_local_notifications/ios"
   local_auth_ios:
     :path: ".symlinks/plugins/local_auth_ios/ios"
   location:
@@ -113,9 +116,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   app_links: 5ef33d0d295a89d9d16bb81b0e3b0d5f70d6c875
+  awesome_notifications: db394d2e061e4583ba0f738ddea611e3986cc3fb
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_contacts: edb1c5ce76aa433e20e6cb14c615f4c0b66e0983
-  flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
+  IosAwnCore: ed1b2b6d84962a758354dbacd9ce525c72ce28a9
   local_auth_ios: c6cf091ded637a88f24f86a8875d8b0f526e2605
   location: d5cf8598915965547c3f36761ae9cc4f4e87d22e
   onesignal_flutter: fa2984cb96f6aba3646dfef4d27abbcc94f382dc
