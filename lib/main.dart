@@ -1,55 +1,66 @@
 import 'dart:async';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 // import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:im_safe/pages/homepage.dart';
 import 'package:im_safe/notification-page.dart';
 import 'package:location/location.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-Future<void> createNotification(int time) async {
-  // await AwesomeNotifications().cancelAll();
+// FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+//     FlutterLocalNotificationsPlugin();
+Future<void> createNotification({int time = 60}) async {
+  await AwesomeNotifications().cancelAll();
+  String localTimeZone =
+      await AwesomeNotifications().getLocalTimeZoneIdentifier();
 
-  // await AwesomeNotifications().createNotification(
-  //   content: NotificationContent(
-  //     id: 10,
-  //     channelKey: 'basic_channel',
-  //     actionType: ActionType.Default,
-  //     title: 'Are you ok?',
-  //   ),
-  //   // schedule: NotificationInterval(
-  //   //   interval: time,
-  //   //   timeZone: localTimeZone,
-  //   //   repeats: true,
-  //   // ),
+  await AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: 10,
+      channelKey: 'basic_channel',
+      actionType: ActionType.Default,
+      title: 'הכל בסדר?',
+    ),
+    // schedule: NotificationInterval(
+    //   interval: time,
+    //   timeZone: localTimeZone,
+    //   repeats: true,
+    // ),
+  );
+
+  // const AndroidNotificationDetails androidNotificationDetails =
+  //     AndroidNotificationDetails(
+  //   'your channel id',
+  //   'your channel name',
+  //   channelDescription: 'your channel description',
+  //   importance: Importance.max,
+  //   priority: Priority.high,
+  //   ticker: 'ticker',
+  //   // icon: '@mipmap/ic_launcher',
   // );
-
-  const AndroidNotificationDetails androidNotificationDetails =
-      AndroidNotificationDetails(
-    'your channel id',
-    'your channel name',
-    channelDescription: 'your channel description',
-    importance: Importance.max,
-    priority: Priority.high,
-    ticker: 'ticker',
-    // icon: '@mipmap/ic_launcher',
-  );
-  const darwinNotificationDetails = DarwinNotificationDetails();
-  const NotificationDetails notificationDetails = NotificationDetails(
-    android: androidNotificationDetails,
-    iOS: darwinNotificationDetails,
-  );
-  await flutterLocalNotificationsPlugin.show(
-    0,
-    'הכל בסדר?',
-    null,
-    notificationDetails,
-    payload: 'item x',
-  );
+  // const darwinNotificationDetails = DarwinNotificationDetails();
+  // const NotificationDetails notificationDetails = NotificationDetails(
+  //   android: androidNotificationDetails,
+  //   iOS: darwinNotificationDetails,
+  // );
+  // await flutterLocalNotificationsPlugin.show(
+  //   0,
+  //   'הכל בסדר?',
+  //   null,
+  //   notificationDetails,
+  //   payload: 'item x',
+  // );
+  // await flutterLocalNotificationsPlugin.periodicallyShow(
+  //   0,
+  //   'הכל בסדר?',
+  //   null,
+  //   RepeatInterval.hourly,
+  //   notificationDetails,
+  //   payload: 'item x',
+  // );
 }
 
 Future<void> enableInBackground(Location location) async {
@@ -59,42 +70,42 @@ Future<void> enableInBackground(Location location) async {
   }
 }
 
-// class NotificationController {
-//   /// Use this method to detect when a new notification or a schedule is created
-//   @pragma("vm:entry-point")
-//   static Future<void> onNotificationCreatedMethod(
-//       ReceivedNotification receivedNotification) async {
-//     // Your code goes here
-//   }
+class NotificationController {
+  /// Use this method to detect when a new notification or a schedule is created
+  @pragma("vm:entry-point")
+  static Future<void> onNotificationCreatedMethod(
+      ReceivedNotification receivedNotification) async {
+    // Your code goes here
+  }
 
-//   /// Use this method to detect every time that a new notification is displayed
-//   @pragma("vm:entry-point")
-//   static Future<void> onNotificationDisplayedMethod(
-//       ReceivedNotification receivedNotification) async {
-//     // Your code goes here
-//   }
+  /// Use this method to detect every time that a new notification is displayed
+  @pragma("vm:entry-point")
+  static Future<void> onNotificationDisplayedMethod(
+      ReceivedNotification receivedNotification) async {
+    // Your code goes here
+  }
 
-//   /// Use this method to detect if the user dismissed a notification
-//   @pragma("vm:entry-point")
-//   static Future<void> onDismissActionReceivedMethod(
-//       ReceivedAction receivedAction) async {
-//     // Your code goes here
-//   }
+  /// Use this method to detect if the user dismissed a notification
+  @pragma("vm:entry-point")
+  static Future<void> onDismissActionReceivedMethod(
+      ReceivedAction receivedAction) async {
+    // Your code goes here
+  }
 
-//   /// Use this method to detect when the user taps on a notification or action button
-//   @pragma("vm:entry-point")
-//   static Future<void> onActionReceivedMethod(
-//       ReceivedAction receivedAction) async {
-//     // Your code goes here
+  /// Use this method to detect when the user taps on a notification or action button
+  @pragma("vm:entry-point")
+  static Future<void> onActionReceivedMethod(
+      ReceivedAction receivedAction) async {
+    // Your code goes here
 
-//     // Navigate into pages, avoiding to open the notification details page over another details page already opened
-//     MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-//       '/notification-page',
-//       (route) => (route.settings.name != '/notification-page') || route.isFirst,
-//       arguments: receivedAction,
-//     );
-//   }
-// }
+    // Navigate into pages, avoiding to open the notification details page over another details page already opened
+    MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+      '/notification-page',
+      (route) => (route.settings.name != '/notification-page') || route.isFirst,
+      arguments: receivedAction,
+    );
+  }
+}
 
 void main() async {
   await Supabase.initialize(
@@ -102,35 +113,59 @@ void main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbmh6YWNtbG95bHdtcnhjc29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTcwMDMxMzYsImV4cCI6MjAxMjU3OTEzNn0.Rko777OCxSIUrhq3rJ0Xsk9Th24jD24XDW7pXZlYuAQ',
   );
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('ic_stat_onesignal_default');
-  const DarwinInitializationSettings initializationSettingsDarwin =
-      DarwinInitializationSettings();
-  const LinuxInitializationSettings initializationSettingsLinux =
-      LinuxInitializationSettings(
-    defaultActionName: 'Open notification',
+
+  AwesomeNotifications().initialize(
+    // set the icon to null if you want to use the default app icon
+    'resource://drawable/ic_stat_onesignal_default',
+    [
+      NotificationChannel(
+        channelGroupKey: 'basic_channel_group',
+        channelKey: 'basic_channel',
+        channelName: 'Basic notifications',
+        channelDescription: 'Notification channel for basic tests',
+        // defaultColor: Color(0xFF9D50DD),
+        // ledColor: Colors.white,
+      )
+    ],
+    // Channel groups are only visual and are not required
+    channelGroups: [
+      NotificationChannelGroup(
+        channelGroupKey: 'basic_channel_group',
+        channelGroupName: 'Basic group',
+      )
+    ],
+    debug: true,
   );
-  const InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: initializationSettingsDarwin,
-    macOS: initializationSettingsDarwin,
-    linux: initializationSettingsLinux,
-  );
-  await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-    onDidReceiveNotificationResponse:
-        (NotificationResponse notificationResponse) async {
-      final String? payload = notificationResponse.payload;
-      if (notificationResponse.payload != null) {
-        debugPrint('notification payload: $payload');
-      }
-      MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-        '/notification-page',
-        (route) =>
-            (route.settings.name != '/notification-page') || route.isFirst,
-      );
-    },
-  );
+
+  // const AndroidInitializationSettings initializationSettingsAndroid =
+  //     AndroidInitializationSettings('ic_stat_onesignal_default');
+  // const DarwinInitializationSettings initializationSettingsDarwin =
+  //     DarwinInitializationSettings();
+  // const LinuxInitializationSettings initializationSettingsLinux =
+  //     LinuxInitializationSettings(
+  //   defaultActionName: 'Open notification',
+  // );
+  // const InitializationSettings initializationSettings = InitializationSettings(
+  //   android: initializationSettingsAndroid,
+  //   iOS: initializationSettingsDarwin,
+  //   macOS: initializationSettingsDarwin,
+  //   linux: initializationSettingsLinux,
+  // );
+  // await flutterLocalNotificationsPlugin.initialize(
+  //   initializationSettings,
+  //   onDidReceiveNotificationResponse:
+  //       (NotificationResponse notificationResponse) async {
+  //     final String? payload = notificationResponse.payload;
+  //     if (notificationResponse.payload != null) {
+  //       debugPrint('notification payload: $payload');
+  //     }
+  //     MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+  //       '/notification-page',
+  //       (route) =>
+  //           (route.settings.name != '/notification-page') || route.isFirst,
+  //     );
+  //   },
+  // );
   runApp(const MyApp());
 }
 
@@ -157,30 +192,31 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     // Only after at least the action method is set, the notification events are delivered
-    // AwesomeNotifications().setListeners(
-    //     onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-    //     onNotificationCreatedMethod:
-    //         NotificationController.onNotificationCreatedMethod,
-    //     onNotificationDisplayedMethod:
-    //         NotificationController.onNotificationDisplayedMethod,
-    //     onDismissActionReceivedMethod:
-    //         NotificationController.onDismissActionReceivedMethod);
-    // AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-    //   if (!isAllowed) {
-    //     // This is just a basic example. For real apps, you must show some
-    //     // friendly dialog box before call the request method.
-    //     // This is very important to not harm the user experience
-    //     AwesomeNotifications().requestPermissionToSendNotifications();
-    //   } else {
-    //     createNotification(60);
-    //   }
-    // });
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
-    flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+        onNotificationCreatedMethod:
+            NotificationController.onNotificationCreatedMethod,
+        onNotificationDisplayedMethod:
+            NotificationController.onNotificationDisplayedMethod,
+        onDismissActionReceivedMethod:
+            NotificationController.onDismissActionReceivedMethod);
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        // This is just a basic example. For real apps, you must show some
+        // friendly dialog box before call the request method.
+        // This is very important to not harm the user experience
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+      //  else {
+      //   createNotification();
+      // }
+    });
+    // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    //     FlutterLocalNotificationsPlugin();
+    // flutterLocalNotificationsPlugin
+    //     .resolvePlatformSpecificImplementation<
+    //         AndroidFlutterLocalNotificationsPlugin>()
+    //     ?.requestNotificationsPermission();
     // getLocationPermissions(location);
     super.initState();
   }
