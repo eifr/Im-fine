@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:im_safe/main.dart';
@@ -63,12 +62,18 @@ class _FollowStatusState extends State<FollowStatus> {
                               .data["contacts"][index]["contact"].displayName,
                         ),
                         subtitle: Text(
-                          'הכל בסדר! עודכן ב-${DateFormat('HH:mm (dd/MM/yy)').format(
+                          '${snapshot.data["contacts"][index]["status"]["is_fine"] ? 'הכל בסדר! עודכן ב-' : 'לא הגיב מאז'} ${DateFormat('HH:mm (dd/MM/yy)').format(
                             DateTime.parse(
                               snapshot.data["contacts"][index]["status"]
                                   ["created_at"],
                             ).toLocal(),
                           )}',
+                          style: !snapshot.data["contacts"][index]["status"]
+                                  ["is_fine"]
+                              ? TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                )
+                              : null,
                         ),
                         trailing: Icon(
                           Icons.shield_outlined,
