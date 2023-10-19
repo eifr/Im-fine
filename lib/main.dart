@@ -24,11 +24,11 @@ Future<void> createNotification({int time = 60}) async {
       actionType: ActionType.Default,
       title: 'הכל בסדר?',
     ),
-    // schedule: NotificationInterval(
-    //   interval: time,
-    //   timeZone: localTimeZone,
-    //   repeats: true,
-    // ),
+    schedule: NotificationInterval(
+      interval: time,
+      timeZone: localTimeZone,
+      repeats: true,
+    ),
   );
 
   // const AndroidNotificationDetails androidNotificationDetails =
