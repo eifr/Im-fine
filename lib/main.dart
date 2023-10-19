@@ -63,12 +63,12 @@ Future<void> createNotification({int time = 60}) async {
   // );
 }
 
-Future<void> enableInBackground(Location location) async {
-  final enabledInBackground = await location.isBackgroundModeEnabled();
-  if (!enabledInBackground) {
-    await location.enableBackgroundMode();
-  }
-}
+// Future<void> enableInBackground(Location location) async {
+//   final enabledInBackground = await location.isBackgroundModeEnabled();
+//   if (!enabledInBackground) {
+//     await location.enableBackgroundMode();
+//   }
+// }
 
 class NotificationController {
   /// Use this method to detect when a new notification or a schedule is created

@@ -156,7 +156,16 @@ class SelfPage extends StatelessWidget {
           ),
           IconButton.filled(
             iconSize: 150,
-            onPressed: widget.stopListen,
+            onPressed: () => {
+              widget.stopListen,
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'הודענו שהכל בסדר 🫶',
+                  ),
+                ),
+              )
+            },
             icon: const Icon(Icons.shield_outlined),
           ),
           Column(
