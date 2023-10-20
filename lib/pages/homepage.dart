@@ -401,7 +401,7 @@ class _ContactsListState extends State<ContactsList> {
                         supabase
                             .from('follows')
                             .upsert(args)
-                            .then((value) => _fetchContacts())
+                            .then((_) => _fetchContacts())
                             .catchError(print);
                       }
                     },
@@ -434,7 +434,8 @@ class ContactPage extends StatelessWidget {
 }
 
 String fixPhoneNumber(String phoneNumber) {
-  final cleanPhoneNumber = phoneNumber.replaceAll('-', '');
+  final cleanPhoneNumber = phoneNumber.replaceAll(RegExp(r'[ -()]'), '');
+
   switch (cleanPhoneNumber[0]) {
     case '0':
       return '972${cleanPhoneNumber.substring(1)}';
