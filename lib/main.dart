@@ -299,7 +299,7 @@ class _MyAppState extends State<MyApp> {
             return MaterialPageRoute(
               builder: (context) => MyHomePage(
                 title: MyApp.name,
-                stopListen: imSafe,
+                stopListen: () => imSafe(),
               ),
             );
 
@@ -356,7 +356,7 @@ class _MyAppState extends State<MyApp> {
         textDirection: TextDirection.rtl,
         child: MyHomePage(
           title: "אני בסדר",
-          stopListen: imSafe,
+          stopListen: () => imSafe(),
         ),
       ),
     );

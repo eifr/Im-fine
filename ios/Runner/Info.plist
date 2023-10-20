@@ -68,5 +68,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>The app should be able to get the user's location when in emergency</string>
+</array>
 </dict>
 </plist>
