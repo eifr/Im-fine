@@ -11,7 +11,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MyHomePage extends StatefulWidget {
-  final void Function() stopListen;
+  final VoidCallback stopListen;
 
   const MyHomePage({
     super.key,
@@ -157,7 +157,7 @@ class SelfPage extends StatelessWidget {
           IconButton.filled(
             iconSize: 150,
             onPressed: () => {
-              widget.stopListen,
+              widget.stopListen(),
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(
@@ -193,6 +193,10 @@ class SelfPage extends StatelessWidget {
                   DropdownMenuEntry(
                     label: '24 שעות',
                     value: 600 * 24,
+                  ),
+                  DropdownMenuEntry(
+                    label: 'שבוע',
+                    value: 600 * 24 * 7,
                   ),
                 ],
               ),
