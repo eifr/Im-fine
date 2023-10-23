@@ -10,6 +10,8 @@ import 'package:location/location.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+const hourInSeconds = 3600;
+
 class MyHomePage extends StatefulWidget {
   final VoidCallback stopListen;
 
@@ -180,23 +182,23 @@ class SelfPage extends StatelessWidget {
                 dropdownMenuEntries: const [
                   DropdownMenuEntry(
                     label: 'שעה',
-                    value: 600,
+                    value: hourInSeconds,
                   ),
                   DropdownMenuEntry(
                     label: '6 שעות',
-                    value: 600 * 6,
+                    value: hourInSeconds * 6,
                   ),
                   DropdownMenuEntry(
                     label: '8 שעות',
-                    value: 600 * 8,
+                    value: hourInSeconds * 8,
                   ),
                   DropdownMenuEntry(
                     label: '24 שעות',
-                    value: 600 * 24,
+                    value: hourInSeconds * 24,
                   ),
                   DropdownMenuEntry(
                     label: 'שבוע',
-                    value: 600 * 24 * 7,
+                    value: hourInSeconds * 24 * 7,
                   ),
                 ],
               ),
