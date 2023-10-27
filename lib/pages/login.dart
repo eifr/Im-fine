@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:im_safe/main.dart';
@@ -32,20 +31,24 @@ class _LoginPageState extends State<LoginPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Check your email for a login link!')),
+          const SnackBar(content: Text('בדקו את הוואטסאפ לקוד אימות!')),
         );
         _isVerifying = true;
         // _phoneNumberController.clear();
       }
     } on AuthException catch (error) {
-      SnackBar(
-        content: Text(error.message),
-        backgroundColor: Theme.of(context).colorScheme.error,
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
       );
     } catch (error) {
-      SnackBar(
-        content: const Text('Unexpected error occurred'),
-        backgroundColor: Theme.of(context).colorScheme.error,
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Unexpected error occurred'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
       );
     } finally {
       if (mounted) {
@@ -69,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Verified!')),
+          const SnackBar(content: Text('אומת!')),
         );
         _phoneNumberController.clear();
       }
@@ -123,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: _isVerifying
                 ? [
-                    const Text('Verify OTP'),
+                    const Text('אימות באמצעות וואטסאפ'),
                     const SizedBox(height: 18),
                     TextFormField(
                       controller: _otpController,
@@ -133,19 +136,19 @@ class _LoginPageState extends State<LoginPage> {
                         LengthLimitingTextInputFormatter(6),
                       ],
                       decoration: const InputDecoration(
-                        labelText: 'OTP',
+                        labelText: 'קוד אימות',
                       ),
                     ),
                     const SizedBox(height: 18),
                     ElevatedButton(
                       onPressed: _isLoading ? null : _verify,
                       child: Text(
-                        _isLoading ? 'Loading' : 'Verify',
+                        _isLoading ? 'טוען' : 'אימות',
                       ),
                     ),
                   ]
                 : [
-                    const Text('Sign in via the Phone Number verification'),
+                    const Text('התחברו באמצעות אימות מספר טלפון'),
                     const SizedBox(height: 18),
                     TextFormField(
                       controller: _phoneNumberController,
@@ -155,15 +158,15 @@ class _LoginPageState extends State<LoginPage> {
                         LengthLimitingTextInputFormatter(9)
                       ],
                       decoration: const InputDecoration(
-                        labelText: 'Phone Number',
-                        prefixText: '+972 ',
+                        labelText: 'מספר טלפון',
+                        suffixText: ' 972+',
                       ),
+                      textDirection: TextDirection.ltr,
                     ),
                     const SizedBox(height: 18),
                     ElevatedButton(
                       onPressed: _isLoading ? null : _sendOtp,
-                      child:
-                          Text(_isLoading ? 'Loading' : 'Send Whatsapp Code'),
+                      child: Text(_isLoading ? 'טוען' : 'שלח קוד בוואטסאפ'),
                     ),
                   ],
           ),

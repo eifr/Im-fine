@@ -1,52 +1,70 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:im_safe/pages/homepage.dart';
 import 'package:im_safe/notification-page.dart';
 import 'package:location/location.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-Future<void> createNotification(int time) async {
+Future<void> createNotification({int time = 60}) async {
   await AwesomeNotifications().cancelAll();
+  String localTimeZone =
+      await AwesomeNotifications().getLocalTimeZoneIdentifier();
 
   await AwesomeNotifications().createNotification(
     content: NotificationContent(
       id: 10,
       channelKey: 'basic_channel',
       actionType: ActionType.Default,
-      title: 'Are you ok?',
-      // body: 'This is my first notification!',
+      title: 'הכל בסדר?',
     ),
-    // schedule: NotificationInterval(
-    //   interval: time,
-    //   timeZone: localTimeZone,
-    //   repeats: true,
-    // ),
+    schedule: NotificationInterval(
+      interval: time,
+      timeZone: localTimeZone,
+      repeats: true,
+    ),
   );
+
+  // const AndroidNotificationDetails androidNotificationDetails =
+  //     AndroidNotificationDetails(
+  //   'your channel id',
+  //   'your channel name',
+  //   channelDescription: 'your channel description',
+  //   importance: Importance.max,
+  //   priority: Priority.high,
+  //   ticker: 'ticker',
+  //   // icon: '@mipmap/ic_launcher',
+  // );
+  // const darwinNotificationDetails = DarwinNotificationDetails();
+  // const NotificationDetails notificationDetails = NotificationDetails(
+  //   android: androidNotificationDetails,
+  //   iOS: darwinNotificationDetails,
+  // );
+  // await flutterLocalNotificationsPlugin.show(
+  //   0,
+  //   'הכל בסדר?',
+  //   null,
+  //   notificationDetails,
+  //   payload: 'item x',
+  // );
+  // await flutterLocalNotificationsPlugin.periodicallyShow(
+  //   0,
+  //   'הכל בסדר?',
+  //   null,
+  //   RepeatInterval.hourly,
+  //   notificationDetails,
+  //   payload: 'item x',
+  // );
 }
 
-Future<void> enableInBackground(Location location) async {
-  final enabledInBackground = await location.isBackgroundModeEnabled();
-  if (!enabledInBackground) {
-    await location.enableBackgroundMode();
-  }
-}
-
-Future<void> getLocationPermissions(Location location) async {
-  final permissionGrantedResult = await location.hasPermission();
-  if (permissionGrantedResult != PermissionStatus.granted) {
-    final permissionRequestedResult = await location.requestPermission();
-    if (permissionRequestedResult != PermissionStatus.granted) {
-      await getLocationPermissions(location);
-    } else {
-      await enableInBackground(location);
-    }
-  } else {
-    await enableInBackground(location);
-  }
-}
+// Future<void> enableInBackground(Location location) async {
+//   final enabledInBackground = await location.isBackgroundModeEnabled();
+//   if (!enabledInBackground) {
+//     await location.enableBackgroundMode();
+//   }
+// }
 
 class NotificationController {
   /// Use this method to detect when a new notification or a schedule is created
@@ -92,18 +110,18 @@ void main() async {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbmh6YWNtbG95bHdtcnhjc29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTcwMDMxMzYsImV4cCI6MjAxMjU3OTEzNn0.Rko777OCxSIUrhq3rJ0Xsk9Th24jD24XDW7pXZlYuAQ',
   );
 
-  await AwesomeNotifications().initialize(
+  AwesomeNotifications().initialize(
     // set the icon to null if you want to use the default app icon
-    null,
+    'resource://drawable/ic_stat_onesignal_default',
     [
       NotificationChannel(
         channelGroupKey: 'basic_channel_group',
         channelKey: 'basic_channel',
         channelName: 'Basic notifications',
         channelDescription: 'Notification channel for basic tests',
-        defaultColor: const Color(0xFF9D50DD),
-        ledColor: Colors.white,
-      ),
+        // defaultColor: Color(0xFF9D50DD),
+        // ledColor: Colors.white,
+      )
     ],
     // Channel groups are only visual and are not required
     channelGroups: [
@@ -115,6 +133,35 @@ void main() async {
     debug: true,
   );
 
+  // const AndroidInitializationSettings initializationSettingsAndroid =
+  //     AndroidInitializationSettings('ic_stat_onesignal_default');
+  // const DarwinInitializationSettings initializationSettingsDarwin =
+  //     DarwinInitializationSettings();
+  // const LinuxInitializationSettings initializationSettingsLinux =
+  //     LinuxInitializationSettings(
+  //   defaultActionName: 'Open notification',
+  // );
+  // const InitializationSettings initializationSettings = InitializationSettings(
+  //   android: initializationSettingsAndroid,
+  //   iOS: initializationSettingsDarwin,
+  //   macOS: initializationSettingsDarwin,
+  //   linux: initializationSettingsLinux,
+  // );
+  // await flutterLocalNotificationsPlugin.initialize(
+  //   initializationSettings,
+  //   onDidReceiveNotificationResponse:
+  //       (NotificationResponse notificationResponse) async {
+  //     final String? payload = notificationResponse.payload;
+  //     if (notificationResponse.payload != null) {
+  //       debugPrint('notification payload: $payload');
+  //     }
+  //     MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+  //       '/notification-page',
+  //       (route) =>
+  //           (route.settings.name != '/notification-page') || route.isFirst,
+  //     );
+  //   },
+  // );
   runApp(const MyApp());
 }
 
@@ -125,7 +172,7 @@ class MyApp extends StatefulWidget {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
-  static const String name = "I'm Fine";
+  static const String name = "אני בסדר";
   // static const Color mainColor = Colors.deepPurple;
 
   @override
@@ -155,11 +202,18 @@ class _MyAppState extends State<MyApp> {
         // friendly dialog box before call the request method.
         // This is very important to not harm the user experience
         AwesomeNotifications().requestPermissionToSendNotifications();
-      } else {
-        createNotification(60);
       }
+      //  else {
+      //   createNotification();
+      // }
     });
-    getLocationPermissions(location);
+    // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    //     FlutterLocalNotificationsPlugin();
+    // flutterLocalNotificationsPlugin
+    //     .resolvePlatformSpecificImplementation<
+    //         AndroidFlutterLocalNotificationsPlugin>()
+    //     ?.requestNotificationsPermission();
+    // getLocationPermissions(location);
     super.initState();
   }
 
@@ -185,7 +239,7 @@ class _MyAppState extends State<MyApp> {
             'is_fine': false,
             'user_id': supabase.auth.currentUser?.id,
             'point':
-                'POINT(${currentLocation.latitude} ${currentLocation.longitude})',
+                'POINT(${currentLocation.longitude} ${currentLocation.latitude})',
           },
         ]).catchError((e) {
           print(e);
@@ -206,9 +260,26 @@ class _MyAppState extends State<MyApp> {
 
   Future stopListen() async {
     await _locationSubscription?.cancel();
+    await location.enableBackgroundMode(enable: false);
     setState(() {
       _locationSubscription = null;
     });
+
+    print('Location sub stopped');
+  }
+
+  Future imSafe() async {
+    try {
+      await stopListen();
+      await supabase.from('user_status').insert([
+        {
+          'is_fine': true,
+          'user_id': supabase.auth.currentUser?.id,
+        },
+      ]);
+    } catch (e) {
+      print(e);
+    }
   }
 
   // This widget is the root of your application.
@@ -224,16 +295,16 @@ class _MyAppState extends State<MyApp> {
             return MaterialPageRoute(
               builder: (context) => MyHomePage(
                 title: MyApp.name,
-                stopListen: stopListen,
+                stopListen: () => imSafe(),
               ),
             );
 
           case '/notification-page':
             return MaterialPageRoute(builder: (context) {
-              final ReceivedAction receivedAction =
-                  settings.arguments as ReceivedAction;
+              // final ReceivedAction receivedAction =
+              //     settings.arguments as ReceivedAction;
               return MyNotificationPage(
-                receivedAction: receivedAction,
+                // receivedAction: receivedAction,
                 subscribeToLocation: listenLocation,
               );
             });
@@ -262,11 +333,27 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blue,
         ),
+        // brightness: Brightness.dark,
+
+        textTheme: GoogleFonts.rubikTextTheme(),
         useMaterial3: true,
       ),
-      home: MyHomePage(
-        title: "I'm Fine",
-        stopListen: stopListen,
+      // darkTheme: ThemeData(
+      //   // brightness: Brightness.dark,
+      //   useMaterial3: true,
+      //   // colorScheme: ColorScheme.fromSeed(
+      //   //   seedColor: Colors.blue,
+
+      //   //   brightness: Brightness.dark,
+      //   // ),
+      //   textTheme: GoogleFonts.rubikTextTheme(),
+      // ),
+      home: Directionality(
+        textDirection: TextDirection.rtl,
+        child: MyHomePage(
+          title: "אני בסדר",
+          stopListen: () => imSafe(),
+        ),
       ),
     );
   }
