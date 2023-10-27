@@ -1,17 +1,13 @@
 import 'dart:async';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-// import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:im_safe/pages/homepage.dart';
 import 'package:im_safe/notification-page.dart';
 import 'package:location/location.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-// FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-//     FlutterLocalNotificationsPlugin();
 Future<void> createNotification({int time = 60}) async {
   await AwesomeNotifications().cancelAll();
   String localTimeZone =
