@@ -398,6 +398,9 @@ class _ContactsListState extends State<ContactsList> {
                         args['id'] = _filteredContacts[i]['id'];
                       }
                       if (_filteredContacts[i]['contact'].phones.isNotEmpty) {
+                        setState(() {
+                          _filteredContacts[i]['enabled'] = value;
+                        });
                         supabase
                             .from('follows')
                             .upsert(args)
