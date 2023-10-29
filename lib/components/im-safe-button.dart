@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:location/location.dart';
 
 class ImSafeButton extends StatefulWidget {
   final void Function() stopListen;
@@ -16,10 +13,7 @@ class ImSafeButton extends StatefulWidget {
 }
 
 class _ImSafeButton extends State<ImSafeButton> {
-  final Location location = Location();
   final LocalAuthentication auth = LocalAuthentication();
-
-  StreamSubscription<LocationData>? _locationSubscription;
 
   @override
   Widget build(BuildContext context) {

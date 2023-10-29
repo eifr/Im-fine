@@ -31,6 +31,9 @@ class _PermissionsState extends State<Permissions> {
 
     if (locationPermission == PermissionStatus.granted) {
       backgroundPermission = await location.enableBackgroundMode();
+      if (backgroundPermission) {
+        await location.enableBackgroundMode(enable: false);
+      }
     } else {
       backgroundPermission = false;
     }
