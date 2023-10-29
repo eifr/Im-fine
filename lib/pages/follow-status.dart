@@ -40,6 +40,19 @@ class _FollowStatusState extends State<FollowStatus> {
                     const SizedBox(
                       height: 10,
                     ),
+                    if (snapshot.data["contacts"].length == 0)
+                      const Column(
+                        children: [
+                          Text(
+                            'הוסיפו אנשי קשר ועדכו שהכל בסדר',
+                            textScaleFactor: 2,
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            'כשאחרים יוסיפו אתכם, תראו את הסטטוס שלהם פה',
+                          ),
+                        ],
+                      ),
                     ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
@@ -113,6 +126,7 @@ class _FollowStatusState extends State<FollowStatus> {
                         ),
                       ),
                     ),
+                    const Divider(),
                     if (snapshot.data["nonContacts"].length > 0)
                       Column(
                         children: [
