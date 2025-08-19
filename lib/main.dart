@@ -8,7 +8,8 @@ import 'package:im_safe/notification-page.dart';
 import 'package:location/location.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-Future<void> createNotification({int time = 60}) async {
+Future<void> createNotification(
+    {Duration time = const Duration(seconds: 60)}) async {
   await AwesomeNotifications().cancelAll();
   String localTimeZone =
       await AwesomeNotifications().getLocalTimeZoneIdentifier();
@@ -104,11 +105,7 @@ class NotificationController {
 }
 
 void main() async {
-  await Supabase.initialize(
-    url: 'https://oknhzacmloylwmrxcsoa.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbmh6YWNtbG95bHdtcnhjc29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTcwMDMxMzYsImV4cCI6MjAxMjU3OTEzNn0.Rko777OCxSIUrhq3rJ0Xsk9Th24jD24XDW7pXZlYuAQ',
-  );
+  await Supabase.initialize(url: '', anonKey: '');
 
   AwesomeNotifications().initialize(
     // set the icon to null if you want to use the default app icon

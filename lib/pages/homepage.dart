@@ -37,11 +37,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _authStateSubscription = supabase.auth.onAuthStateChange.listen((data) {
       setState(() {
         if (data.session != null) {
-          // createNotification(time: 60);
-          // OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
           OneSignal.initialize("341c3a51-a9c3-49e2-b467-41d319bfc720");
           OneSignal.login(supabase.auth.currentUser!.id);
-          // The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
           OneSignal.Notifications.requestPermission(true);
         }
         _session = data.session;
@@ -58,13 +55,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-
     if (_session != null) {
       return SafeArea(
         child: Permissions(
@@ -94,16 +84,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 )
               ],
             ),
-            // appBar: AppBar(
-            //   // TRY THIS: Try changing the color here to a specific color (to
-            //   // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-            //   // change color while the other colors stay the same.
-            //   // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-            //   // Here we take the value from the MyHomePage object that was created by
-            //   // the App.build method, and use it to set our appbar title.
-            //   title: Text(widget.title),
-            //   centerTitle: true,
-            // ),
             body: [
               const FollowStatus(),
               SelfPage(widget: widget)
@@ -128,28 +108,12 @@ class SelfPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      // Center is a layout widget. It takes a single child and positions it
-      // in the middle of the parent.
       child: Column(
-        // Column is also a layout widget. It takes a list of children and
-        // arranges them vertically. By default, it sizes itself to fit its
-        // children horizontally, and tries to be as tall as its parent.
-        //
-        // Column has various properties to control how it sizes itself and
-        // how it positions its children. Here we use mainAxisAlignment to
-        // center the children vertically; the main axis here is the vertical
-        // axis because Columns are vertical (the cross axis would be
-        // horizontal).
-        //
-        // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-        // action in the IDE, or press "p" in the console), to see the
-        // wireframe for each widget.
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-
         children: [
           const Column(
             children: [
-              Text('הכל בסדר?', textScaleFactor: 3),
+              Text('הכל בסדר?', textScaler: TextScaler.linear(3)),
               Text('האפליקציה עוקבת אחרי המיקום'),
               Text('לחצו על המגן בכדי לאמת שאתם בסדר'),
             ],
@@ -175,7 +139,7 @@ class SelfPage extends StatelessWidget {
                   'תבדוק איתי כל:',
                 ),
                 onSelected: (value) => {
-                  createNotification(time: value!),
+                  createNotification(time: Duration(seconds: value ?? 60)),
                 },
                 dropdownMenuEntries: const [
                   DropdownMenuEntry(

@@ -46,7 +46,7 @@ class _PermissionsState extends State<Permissions> {
     });
   }
 
-  _requestContactPermission() async {
+  Future<void> _requestContactPermission() async {
     final contactPermissions =
         await FlutterContacts.requestPermission(readonly: true);
 
@@ -55,7 +55,7 @@ class _PermissionsState extends State<Permissions> {
     });
   }
 
-  _requestLocationPermission() async {
+  Future<void> _requestLocationPermission() async {
     final locationPermissions = await location.requestPermission();
 
     setState(() {
@@ -63,7 +63,7 @@ class _PermissionsState extends State<Permissions> {
     });
   }
 
-  _requestBackgroundPermission() async {
+  Future<void> _requestBackgroundPermission() async {
     final backgroundPermissions = await location.enableBackgroundMode();
     if (backgroundPermissions) {
       await location.enableBackgroundMode(enable: false);
