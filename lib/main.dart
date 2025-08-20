@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:im_safe/pages/homepage.dart';
 import 'package:im_safe/notification-page.dart';
@@ -27,45 +26,7 @@ Future<void> createNotification(
       repeats: true,
     ),
   );
-
-  // const AndroidNotificationDetails androidNotificationDetails =
-  //     AndroidNotificationDetails(
-  //   'your channel id',
-  //   'your channel name',
-  //   channelDescription: 'your channel description',
-  //   importance: Importance.max,
-  //   priority: Priority.high,
-  //   ticker: 'ticker',
-  //   // icon: '@mipmap/ic_launcher',
-  // );
-  // const darwinNotificationDetails = DarwinNotificationDetails();
-  // const NotificationDetails notificationDetails = NotificationDetails(
-  //   android: androidNotificationDetails,
-  //   iOS: darwinNotificationDetails,
-  // );
-  // await flutterLocalNotificationsPlugin.show(
-  //   0,
-  //   'הכל בסדר?',
-  //   null,
-  //   notificationDetails,
-  //   payload: 'item x',
-  // );
-  // await flutterLocalNotificationsPlugin.periodicallyShow(
-  //   0,
-  //   'הכל בסדר?',
-  //   null,
-  //   RepeatInterval.hourly,
-  //   notificationDetails,
-  //   payload: 'item x',
-  // );
 }
-
-// Future<void> enableInBackground(Location location) async {
-//   final enabledInBackground = await location.isBackgroundModeEnabled();
-//   if (!enabledInBackground) {
-//     await location.enableBackgroundMode();
-//   }
-// }
 
 class NotificationController {
   /// Use this method to detect when a new notification or a schedule is created
@@ -108,7 +69,6 @@ void main() async {
   await Supabase.initialize(url: '', anonKey: '');
 
   AwesomeNotifications().initialize(
-    // set the icon to null if you want to use the default app icon
     'resource://drawable/ic_stat_onesignal_default',
     [
       NotificationChannel(
@@ -116,11 +76,8 @@ void main() async {
         channelKey: 'basic_channel',
         channelName: 'Basic notifications',
         channelDescription: 'Notification channel for basic tests',
-        // defaultColor: Color(0xFF9D50DD),
-        // ledColor: Colors.white,
       )
     ],
-    // Channel groups are only visual and are not required
     channelGroups: [
       NotificationChannelGroup(
         channelGroupKey: 'basic_channel_group',
@@ -130,35 +87,6 @@ void main() async {
     debug: true,
   );
 
-  // const AndroidInitializationSettings initializationSettingsAndroid =
-  //     AndroidInitializationSettings('ic_stat_onesignal_default');
-  // const DarwinInitializationSettings initializationSettingsDarwin =
-  //     DarwinInitializationSettings();
-  // const LinuxInitializationSettings initializationSettingsLinux =
-  //     LinuxInitializationSettings(
-  //   defaultActionName: 'Open notification',
-  // );
-  // const InitializationSettings initializationSettings = InitializationSettings(
-  //   android: initializationSettingsAndroid,
-  //   iOS: initializationSettingsDarwin,
-  //   macOS: initializationSettingsDarwin,
-  //   linux: initializationSettingsLinux,
-  // );
-  // await flutterLocalNotificationsPlugin.initialize(
-  //   initializationSettings,
-  //   onDidReceiveNotificationResponse:
-  //       (NotificationResponse notificationResponse) async {
-  //     final String? payload = notificationResponse.payload;
-  //     if (notificationResponse.payload != null) {
-  //       debugPrint('notification payload: $payload');
-  //     }
-  //     MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-  //       '/notification-page',
-  //       (route) =>
-  //           (route.settings.name != '/notification-page') || route.isFirst,
-  //     );
-  //   },
-  // );
   runApp(const MyApp());
 }
 
@@ -170,7 +98,6 @@ class MyApp extends StatefulWidget {
       GlobalKey<NavigatorState>();
 
   static const String name = "אני בסדר";
-  // static const Color mainColor = Colors.deepPurple;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -179,8 +106,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   StreamSubscription<LocationData>? _locationSubscription;
   final Location location = Location();
-  LocationData? _location;
-  String? _error;
 
   @override
   void initState() {
@@ -195,22 +120,9 @@ class _MyAppState extends State<MyApp> {
             NotificationController.onDismissActionReceivedMethod);
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
       if (!isAllowed) {
-        // This is just a basic example. For real apps, you must show some
-        // friendly dialog box before call the request method.
-        // This is very important to not harm the user experience
         AwesomeNotifications().requestPermissionToSendNotifications();
       }
-      //  else {
-      //   createNotification();
-      // }
     });
-    // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    //     FlutterLocalNotificationsPlugin();
-    // flutterLocalNotificationsPlugin
-    //     .resolvePlatformSpecificImplementation<
-    //         AndroidFlutterLocalNotificationsPlugin>()
-    //     ?.requestNotificationsPermission();
-    // getLocationPermissions(location);
     super.initState();
   }
 
@@ -221,11 +133,6 @@ class _MyAppState extends State<MyApp> {
 
       _locationSubscription =
           location.onLocationChanged.handleError((dynamic err) {
-        if (err is PlatformException) {
-          setState(() {
-            _error = err.code;
-          });
-        }
         _locationSubscription?.cancel();
         setState(() {
           _locationSubscription = null;
@@ -238,16 +145,7 @@ class _MyAppState extends State<MyApp> {
             'point':
                 'POINT(${currentLocation.longitude} ${currentLocation.latitude})',
           },
-        ]).catchError((e) {
-          print(e);
-        });
-
-        print(currentLocation);
-        setState(() {
-          _error = null;
-
-          _location = currentLocation;
-        });
+        ]);
       });
       setState(() {});
     } catch (e) {
@@ -261,22 +159,16 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _locationSubscription = null;
     });
-
-    print('Location sub stopped');
   }
 
   Future imSafe() async {
-    try {
-      await stopListen();
-      await supabase.from('user_status').insert([
-        {
-          'is_fine': true,
-          'user_id': supabase.auth.currentUser?.id,
-        },
-      ]);
-    } catch (e) {
-      print(e);
-    }
+    await stopListen();
+    await supabase.from('user_status').insert([
+      {
+        'is_fine': true,
+        'user_id': supabase.auth.currentUser?.id,
+      },
+    ]);
   }
 
   // This widget is the root of your application.
@@ -312,39 +204,11 @@ class _MyAppState extends State<MyApp> {
         }
       },
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blue,
         ),
-        // brightness: Brightness.dark,
-
-        textTheme: GoogleFonts.rubikTextTheme(),
         useMaterial3: true,
       ),
-      // darkTheme: ThemeData(
-      //   // brightness: Brightness.dark,
-      //   useMaterial3: true,
-      //   // colorScheme: ColorScheme.fromSeed(
-      //   //   seedColor: Colors.blue,
-
-      //   //   brightness: Brightness.dark,
-      //   // ),
-      //   textTheme: GoogleFonts.rubikTextTheme(),
-      // ),
       home: Directionality(
         textDirection: TextDirection.rtl,
         child: MyHomePage(

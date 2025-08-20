@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_session != null) {
+    if (_session == null) {
       return SafeArea(
         child: Permissions(
           child: Scaffold(
