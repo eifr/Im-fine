@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:im_safe/pages/homepage.dart';
-import 'package:im_safe/notification-page.dart';
+import 'package:im_safe/pages/notification-page.dart';
 import 'package:location/location.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-Future<void> createNotification(
-    {Duration time = const Duration(seconds: 60)}) async {
+Future<void> createNotification({
+  Duration time = const Duration(
+    seconds: 60,
+  ),
+}) async {
   await AwesomeNotifications().cancelAll();
   String localTimeZone =
       await AwesomeNotifications().getLocalTimeZoneIdentifier();
@@ -109,7 +111,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    // Only after at least the action method is set, the notification events are delivered
     AwesomeNotifications().setListeners(
         onActionReceivedMethod: NotificationController.onActionReceivedMethod,
         onNotificationCreatedMethod:
